@@ -1,0 +1,46 @@
+# --- secrets: never commit ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets.json
+credentials.json
+
+# --- competition material: Mastercard retains IP in Event materials (Rules §5).
+# Raw captures of the competition pages are kept locally for reference only and are
+# deliberately excluded from the public repository. research/competition.md quotes
+# only the minimum necessary.
+research/*.html
+research/kaggle-raw/
+
+# --- python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# --- node / frontend ---
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+
+# --- artifacts ---
+*.log
+data/generated/
+artifacts/
+*.db
+*.sqlite3
+
+# --- os / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

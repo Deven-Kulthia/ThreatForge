@@ -1,0 +1,11 @@
+# Core runtime. All dependencies are OSI-approved permissive licences
+# (BSD-3-Clause / MIT / Apache-2.0), as required by Kaggle Foundational Rules §6c.
+numpy>=2.0            # BSD-3-Clause
+pandas>=2.2           # BSD-3-Clause
+scikit-learn>=1.5     # BSD-3-Clause
+networkx>=3.3         # BSD-3-Clause
+fastapi>=0.115        # MIT
+uvicorn[standard]>=0.30  # BSD-3-Clause
+
+# Testing
+pytest>=8.0           # MIT
