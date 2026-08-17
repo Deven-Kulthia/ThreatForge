@@ -1,6 +1,6 @@
 # Current State
 
-**Updated:** 2026-08-17 · **Phase:** documentation complete; deck + judge simulation next
+**Updated:** 2026-08-17 · **Phase:** all three artifacts exist; judge simulation + submit next
 
 ## Architecture
 ```
@@ -21,18 +21,30 @@ frontend/     7-panel React command centre
 - **Tests:** 113 passing across 4 suites (data pipeline, detection, security, API)
 - **Verification gate:** `scripts/verify.sh --full` — self-checks, tests, compliance scan, typecheck, build, browser smoke
 - **Docs:** architecture, decisions, threat-model, fraud-taxonomy (generated), detection-methodology, evaluation (generated), security, demo-flow, deployment, README
+- **Deck:** `artifacts/aegis-walkthrough.pptx` — 14 slides + speaker notes, generated from
+  metrics.json by `scripts/make_deck.py` (so it cannot drift from the code)
+- **Writeup:** `docs/submission-writeup.md` — Kaggle Writeups paste target, covers all 14 criteria
 - **Pushed:** 5 commits to private repo `Deven-Kulthia/aegis-ai-defence-lab`
+
+## Next
+1. Judge simulation against all 14 official criteria, then fix what it surfaces
+2. **Submit a minimum writeup to Kaggle Writeups EARLY** (draft ≠ submitted = not considered)
+3. Presenter's walkthrough for the user
+
+## Submission checklist (P0 — all three or the entry is invalid)
+- [x] Artifact 1: code repo, runnable, covers identify/generate/defend
+- [x] Artifact 2: walkthrough .pptx with efficacy results
+- [x] Artifact 3: working web prototype, presentable UI, shows the closed loop
+- [ ] **Writeup actually SUBMITTED on Kaggle** (not left in draft) ← the disqualification risk
+- [ ] Re-check the competition page before submitting (Mastercard may amend terms)
+- [x] Registration: Kaggle rules accepted (= entry). Registration closes **20 Aug** — confirm any
+      separate Luma/Mastercard form is done before then
+- [x] Synthetic-only, network-isolated simulator, permissive licences, repo private
 
 ## Verified metrics (`artifacts/metrics.json`)
 PR-AUC **0.957** (CI 0.946–0.969) · ROC-AUC 0.996 · best-F1 **0.934** (P 0.989 / R 0.885) ·
 FPR 0.0003 · decision **p50 16.6ms / p99 31.4ms** · zero-day recall **0.781** ·
 ECE 0.0019 · VDR 0.913 · 90,256 txns at 3.83% fraud
-
-## Next
-1. Walkthrough deck (.pptx) — required submission artifact
-2. Judge simulation against all 14 official criteria, then fix what it surfaces
-3. Kaggle writeup + final submission audit
-4. Presenter's walkthrough for the user
 
 ## Key decisions
 - No lightgbm/shap (libomp + numba unavailable on py3.14) → sklearn HistGB + exact additive explainer
