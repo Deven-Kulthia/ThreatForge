@@ -250,7 +250,7 @@ Honest about what this prototype is and what production would require:
 | Concern | Today | Production |
 |---|---|---|
 | Feature computation | Batch recompute (0.10 ms/row amortised) | Streaming feature store with incremental windowed aggregates |
-| Decision latency | p50 16.6 ms, p99 31.4 ms in-process | Same shape; model serving behind a thin RPC layer |
+| Decision latency | p50 13.7 ms, p99 18.8 ms in-process | Same shape; model serving behind a thin RPC layer |
 | Graph stage | Recomputed per batch on the gated slice | Incrementally maintained entity graph; Grab documents real-time graph updating as the hard part |
 | State | In-process DataFrames | Event log + feature store; the cascade itself is stateless |
 | Labels | Known by construction | Chargeback/investigator feedback with weeks of delay — the delay block in evaluation models this |

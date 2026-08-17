@@ -86,7 +86,7 @@ Without calibration, a threshold like "block above 0.9" has no defensible meanin
 0.9 really does mean roughly a 1-in-10 false-block rate, which is what makes a cost-based
 threshold arguable to a risk owner.
 
-**Measured.** ECE 0.0019, Brier 0.0035.
+**Measured.** ECE 0.0038, Brier 0.0045.
 
 ---
 
@@ -99,7 +99,7 @@ remainder.
 block models an operational fact: chargeback and investigator labels arrive weeks late, so
 a model deployed today cannot have been trained on last week's still-unlabelled fraud.
 
-**Consequence.** Our headline PR-AUC (0.957) is lower than the in-sample figure (0.935–0.99
+**Consequence.** Our headline PR-AUC (0.944) is lower than the in-sample figure (0.935–0.99
 depending on configuration) would suggest, and that is the point.
 
 ---

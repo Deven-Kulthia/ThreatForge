@@ -144,7 +144,7 @@ Treating our detector as an attack surface, not just as a defence:
   built to defeat threshold and velocity logic within feasible action bounds. Their recall
   is reported individually.
 - **Zero-day generalisation is measured.** Six vectors are removed from training entirely;
-  recall on them is 0.781 at an operating point calibrated on seen traffic only.
+  recall on them is 0.718 at an operating point calibrated on seen traffic only.
 - **Concept drift is acknowledged as partly invisible.** Label-free monitoring detects
   covariate drift reliably but pure concept drift with unchanged P(X) is *structurally*
   invisible — replicated in two independent papers. Our generator can produce exactly that

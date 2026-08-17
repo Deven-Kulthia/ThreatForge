@@ -14,18 +14,18 @@ Every number below is produced by `backend/app/evaluate.py` and regenerates from
 
 | Metric | Value | Why it's the right metric |
 |---|---|---|
-| **PR-AUC** | **0.957** (95% CI 0.946–0.969) | The honest summary under heavy class imbalance |
-| ROC-AUC | 0.996 | Reported for comparability; optimistic under imbalance |
-| Best-F1 | **0.934** — P 0.989 / R 0.885 | Conventional reference point |
-| False-positive rate | **0.0003** | False declines have a real customer cost |
-| **Decision latency** | **p50 16.6 ms · p99 31.4 ms** | The inline authorization path, not batch throughput |
-| **Zero-day recall** | **0.781** | Recall on 6 attack types removed from training entirely |
-| Calibration | **ECE 0.0019 · Brier 0.0035** | Makes "block above 0.9" actually mean something |
-| Value detection rate | 0.913 | Fraud is a money problem, not a count problem |
-| Recall @ 1% alert budget | 0.334 (ceiling **0.335**) | Budget-bound, not model-bound — 99.7% of the achievable maximum |
-| Recall @ prevalence-matched budget | 0.918 | Recall when the review queue isn't the binding constraint |
+| **PR-AUC** | **0.944** (95% CI 0.931–0.957) | The honest summary under heavy class imbalance |
+| ROC-AUC | 0.989 | Reported for comparability; optimistic under imbalance |
+| Best-F1 | **0.929** — P 0.972 / R 0.891 | Conventional reference point |
+| False-positive rate | **0.0008** | False declines have a real customer cost |
+| **Decision latency** | **p50 13.7 ms · p99 18.8 ms** | The inline authorization path, not batch throughput |
+| **Zero-day recall** | **0.718** | Recall on 6 attack types removed from training entirely |
+| Calibration | **ECE 0.0038 · Brier 0.0045** | Makes "block above 0.9" actually mean something |
+| Value detection rate | 0.941 | Fraud is a money problem, not a count problem |
+| Recall @ 1% alert budget | 0.334 (ceiling **0.336**) | Budget-bound, not model-bound — 99.7% of the achievable maximum |
+| Recall @ prevalence-matched budget | 0.909 | Recall when the review queue isn't the binding constraint |
 
-**Scale:** 90,256 transactions · 3,457 fraud (3.83%) · 25 attack vectors · 45-day window · temporal split with a delay block.
+**Scale:** 90,258 transactions · 3,459 fraud (3.83%) · 25 attack vectors · 45-day window · temporal split with a delay block.
 
 A 2026 survey of 49 sources found that among 18 fraud sources, **none reported latency, cost, or calibration**. We report all three.
 
@@ -232,7 +232,7 @@ Rule signal names are aligned to the taxonomy's declared signals — that alignm
 | ≥ 0.30 | MEDIUM | `REVIEW` |
 | < 0.30 | LOW | `ALLOW` |
 
-Because scores are calibrated (ECE 0.0019), these thresholds can be re-derived from a cost model rather than chosen by feel. Every decision at HIGH or above carries at least one named signal — asserted in the test suite, because a block with no explanation is operationally unusable.
+Because scores are calibrated (ECE 0.0038), these thresholds can be re-derived from a cost model rather than chosen by feel. Every decision at HIGH or above carries at least one named signal — asserted in the test suite, because a block with no explanation is operationally unusable.
 
 ## Explainability
 

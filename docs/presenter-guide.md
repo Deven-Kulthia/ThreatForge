@@ -28,7 +28,7 @@ Add, in this order:
 3. **Generate.** Agents that may only move what a real attacker controls — amount, timing,
    cadence, merchant, device, sequencing. Never the victim's own history or issuer-side state.
 4. **Defend.** Three-stage cascade — 39 rules, gradient boosting, graph structure on the riskiest
-   20% — with exact additive reason codes. PR-AUC 0.957, p99 31 ms inline.
+   20% — with exact additive reason codes. PR-AUC 0.944, p99 18.8 ms inline.
 5. **The loop.** Attacks declare their expected signals *before* running, so a miss is
    attributable. 39 of 39 declared signals implemented; the 8 we can't do are named with reasons.
 
@@ -89,7 +89,7 @@ the slides and the code will disagree.
 ./scripts/verify.sh --full
 ```
 
-Runs, in order: 5 module self-checks → 113 pytest tests → secrets/compliance scan → metrics
+Runs, in order: 6 module self-checks → 113 pytest tests → secrets/compliance scan → metrics
 artifact check → TypeScript typecheck → Vite build → Playwright browser smoke test.
 
 **Important:** the browser smoke test is *skipped* unless both servers are already running. Start
@@ -159,25 +159,38 @@ The security suite is the one that matters for rules compliance — it proves th
 
 ### A. Detection / ML
 
-**"PR-AUC 0.957 seems too good. Is your synthetic fraud just trivially separable?"**
+**"PR-AUC 0.944 seems too good. Is your synthetic fraud just trivially separable?"**
 > The honest answer is that it would be, if we let the generators cheat. They can only move what an
 > attacker controls — amount, timing, cadence, merchant, device, sequencing. They cannot touch the
 > victim's baseline, issuer risk state, or AVS/CVV results. And 12 of 25 vectors are deliberately
-> built to overlap legitimate behaviour. The proof it isn't trivial: adaptive mimicry sits at 0.030
-> recall and SIM-swap OTP at 0.000 within a 1% review budget. If the data were trivially separable
+> built to overlap legitimate behaviour. The proof it isn't trivial: adaptive mimicry sits at 0.015
+> recall and SIM-swap OTP at 0.042 within a 1% review budget. If the data were trivially separable
 > those would be 1.0.
 
-**"Why PR-AUC and not accuracy or ROC-AUC?"**
-> At 2.98% test prevalence, blocking nothing scores 97% accuracy. ROC-AUC is optimistic under
-> imbalance because the true-negative pool is enormous — that's why we report it as 0.996 but
-> label it "for comparability only." PR-AUC is the honest summary, and the 95% interval
-> (0.946–0.969) is bootstrapped.
+**"Prove your synthetic data is realistic. Don't just tell me it is."**
+> `backend/app/fidelity.py`, and the results are in `metrics.json`. Two halves. First, nine
+> generated marginals against published reference bands — all nine in band, including Benford MAD
+> of 0.0010 on amount leading digits, which is inside Nigrini's "close conformity" threshold of
+> 0.006. We didn't tune for that. Second, and more important: univariate AUC on **raw**
+> authorization fields. Max is 0.896, and `amount` is only 0.559 with 0.86 overlap — meaning we do
+> *not* do "fraud = big transactions," which is the shortcut that makes most synthetic fraud
+> corpora trivially separable. No single raw field gives the attacks away.
 
-**"Why does SIM_SWAP_OTP show 0.000 recall? That looks broken."**
+**"Isn't cross_border at 0.896 AUC a giveaway?"**
+> It's the highest single field, and it's realistic rather than an artefact — cross-border
+> genuinely carries materially elevated fraud rates in live portfolios. If our cross-border fraud
+> rate matched domestic, *that* would be the fidelity failure.
+
+**"Why PR-AUC and not accuracy or ROC-AUC?"**> At 2.98% test prevalence, blocking nothing scores 97% accuracy. ROC-AUC is optimistic under
+> imbalance because the true-negative pool is enormous — that's why we report it as 0.989 but
+> label it "for comparability only." PR-AUC is the honest summary, and the 95% interval
+> (0.931–0.957) is bootstrapped.
+
+**"Why does REFUND_ABUSE_COLLUSION show 0.000 recall? That looks broken."**
 > That's a queue-capacity number, not a model number. At a 1% alert budget and 2.98% prevalence,
-> the maximum recall *any* detector could achieve is 0.335 — we hit 0.334, which is 99.7% of the
+> the maximum recall *any* detector could achieve is 0.336 — we hit 0.334, which is 99.4% of the
 > mathematical ceiling. Those rows lose the competition for 271 review slots. Size the budget to
-> prevalence instead and overall recall is 0.918 at 0.918 precision. And look at the mean-risk
+> prevalence instead and overall recall is 0.909 at 0.909 precision. And look at the mean-risk
 > column — the model does rank them highly.
 
 **"How do you know you're not leaking labels or the future?"**
@@ -195,7 +208,7 @@ The security suite is the one that matters for rules compliance — it proves th
 
 **"Why isotonic calibration?"**
 > Because a risk score is only useful to a downstream policy if 0.9 means 0.9. Isotonic on a
-> held-out temporal slice gets ECE to 0.0019, which lets a bank set thresholds on expected loss
+> held-out temporal slice gets ECE to 0.0038, which lets a bank set thresholds on expected loss
 > rather than an arbitrary cut. Platt scaling assumes a sigmoid shape our cascade doesn't have.
 
 **"Where's SHAP?"**
@@ -215,13 +228,13 @@ The security suite is the one that matters for rules compliance — it proves th
 > ones.
 
 **"Could this actually sit in an authorization flow?"**
-> p99 is 31.4 ms for the inline decision path with features supplied. The design choice that makes
+> p99 is 18.8 ms for the inline decision path with features supplied. The design choice that makes
 > it hold: the expensive graph stage runs on the riskiest 20% of traffic as an explicit *compute
 > budget*, not a score threshold. A threshold lets cost spike exactly when an attack floods the
 > high-risk band; a budget cannot.
 
 **"What's your false-positive story? Declining good customers is expensive."**
-> Insult rate 0.0003 at the best-F1 point — 8 false positives against 26,261 legitimate payments.
+> Insult rate 0.0008 at the best-F1 point — 8 false positives against 26,251 legitimate payments.
 > We also report operating points against analyst review capacity rather than only at best-F1,
 > because a queue nobody can work isn't a control.
 
@@ -253,9 +266,9 @@ The security suite is the one that matters for rules compliance — it proves th
 
 **"Prove it generalises to attacks you didn't train on."**
 > Six vectors held out of training entirely, scored at a threshold calibrated on seen traffic only —
-> no retuning. Aggregate unseen recall 0.781 on 973 transactions. BIN enumeration and synthetic-ID
-> bust-out at 1.000, credential stuffing 0.983, APP scam 0.933, romance fraud 0.764. Agent
-> impersonation is the weak one at 0.190.
+> no retuning. Aggregate unseen recall 0.718 on 975 transactions. BIN enumeration 1.000, synthetic-ID
+> bust-out 0.982, credential stuffing 0.974, APP scam 0.800, romance fraud 0.500. Agent
+> impersonation is the weak one at 0.116.
 
 **"Why is agent impersonation so bad?"**
 > Because in an authorization message a legitimate agentic purchase and an impersonated one are
@@ -298,10 +311,10 @@ The security suite is the one that matters for rules compliance — it proves th
 > metrics file so no number is hand-typed. I can regenerate every figure in front of you.
 
 **"What's the weakest part of the project?"**
-> Adaptive mimicry detection, at 0.030 recall within a 1% budget. It learns the victim's own
+> Adaptive mimicry detection, at 0.015 recall within a 1% budget. It learns the victim's own
 > baseline and stays inside it, which defeats deviation-based features by construction. Beating it
 > probably needs sequence modelling over the account's full history rather than windowed
-> aggregates. Second weakest is agent impersonation, for schema reasons.
+> aggregates. Second weakest is agent impersonation at 0.116 zero-day recall, for schema reasons.
 
 **"What would you do with another month?"**
 > Those two rows first. Then agent-identity attestation in the schema, and a second-order loop
@@ -317,16 +330,16 @@ The security suite is the one that matters for rules compliance — it proves th
 
 ## Part 6 — Numbers to have memorised
 
-**Headline:** PR-AUC **0.957** (CI 0.946–0.969) · F1 **0.934** (P 0.989 / R 0.885) ·
-p99 **31.4 ms** · zero-day **0.781**
+**Headline:** PR-AUC **0.944** (CI 0.931–0.957) · F1 **0.929** (P 0.972 / R 0.891) ·
+p99 **18.8 ms** · zero-day **0.718**
 
-**Scale:** 25 vectors · 10 categories · 90,256 transactions · 3.83% fraud · 1,650 cards ·
+**Scale:** 25 vectors · 10 categories · 90,258 transactions · 3.83% fraud · 1,650 cards ·
 263 merchants · 44 days · 75 campaigns
 
-**Defence:** 39 rules · 57 causal features · graph on top 20% · ECE 0.0019 · VDR 0.913
+**Defence:** 39 rules · 57 causal features · graph on top 20% · ECE 0.0038 · VDR 0.941
 
-**The one that saves you:** 1% budget recall 0.334 against a **ceiling of 0.335** — 99.7% of the
-maximum achievable. Prevalence-matched alternative: **0.918 recall at 0.918 precision**.
+**The one that saves you:** 1% budget recall 0.334 against a **ceiling of 0.336** — 99.7% of the
+maximum achievable. Prevalence-matched alternative: **0.909 recall at 0.909 precision**.
 
 **Quality:** 113 tests · one-command gate · 41 Python + 121 npm deps, zero copyleft
 
@@ -350,7 +363,7 @@ curl -s localhost:8000/api/health
 - [ ] `artifacts/screenshots/` open in a second window as fallback
 - [ ] `artifacts/aegis-walkthrough.pptx` open as fallback-of-fallback
 - [ ] Laptop on mains, notifications off, screen-share tested
-- [ ] You can say the ceiling answer (0.334 vs 0.335) without looking it up
+- [ ] You can say the ceiling answer (0.334 vs 0.336) without looking it up
 
 ---
 

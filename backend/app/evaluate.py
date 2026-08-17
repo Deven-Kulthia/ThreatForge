@@ -36,6 +36,7 @@ from sklearn.metrics import (
 from .attacks import TAXONOMY, run_all
 from .detect import RULE_NAMES, UNIMPLEMENTED_SIGNALS, Detector
 from .features import build_features
+from .fidelity import assess as assess_fidelity
 from .generator import build_population, generate_legit
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -390,6 +391,7 @@ def evaluate(verbose: bool = True) -> dict:
         "per_attack": per_attack,
         "per_signal_recall": per_signal,
         "zero_day": zero_day_experiment(df),
+        "fidelity": assess_fidelity(df),
     }
 
     ARTIFACTS.mkdir(exist_ok=True)
@@ -452,6 +454,22 @@ def _write_report(m: dict) -> None:
                            key=lambda kv: kv[1]["recall_at_seen_threshold"])
     )
 
+    fid = m["fidelity"]
+    fid_rows = "\n".join(
+        f"| {k.replace('_', ' ')} | {v['value']} | {v['reference_band'][0]}–"
+        f"{v['reference_band'][1]} | {'yes' if v['within_band'] else 'NO'} |"
+        for k, v in fid["realism"].items() if isinstance(v, dict)
+    )
+    fid_fields = "\n".join(
+        f"| {k} | {v['univariate_auc']:.3f} | {v['overlap']:.3f} |"
+        for k, v in sorted(fid["separability"]["per_field"].items(),
+                           key=lambda kv: -kv[1]["univariate_auc"])
+    )
+    fid_camo = "\n".join(
+        f"- `{k}` — mean overlap {v:.3f}"
+        for k, v in fid["separability"]["most_camouflaged_vectors"].items()
+    )
+
     DOCS.mkdir(exist_ok=True)
     (DOCS / "evaluation.md").write_text(f"""# Evaluation Results
 
@@ -512,6 +530,41 @@ recall {pm['recall']:.3f}, precision {pm['precision']:.3f}. {pm['rationale']}.
 | Fraud value attempted | {mo['fraud_value_attempted']:,.2f} |
 | Fraud value stopped | {mo['fraud_value_stopped']:,.2f} |
 | Insult rate | {mo['insult_rate']:.4f} |
+
+> Absolute values are summed over `amount` across a multi-currency synthetic population,
+> so they carry no single currency unit. Read the **ratio** (value detection rate), not the
+> absolute totals.
+
+## Fidelity evidence (criterion 2)
+
+Fidelity is judged instrumentally, so it is measured rather than asserted.
+{fid['summary']}.
+
+### Generated marginals vs published reference bands
+
+| Measure | Value | Reference band | In band |
+|---|---|---|---|
+{fid_rows}
+
+Bands are sourced from public references (PSD2 RTS Annex fraud-rate bands, Nigrini's MAD
+thresholds for Benford conformity) and are deliberately wide — they are sanity bands for a
+synthetic corpus, not targets to overfit.
+
+### Non-separability of attack traffic
+
+If attacks came from an obviously different process, any classifier would score ~1.0 and the
+whole evaluation would be meaningless. Measured on **raw** authorization fields, not
+engineered features:
+
+| Raw field | Univariate AUC | Attack/legit overlap |
+|---|---|---|
+{fid_fields}
+
+Max univariate AUC **{fid['separability']['max_univariate_auc']}**, mean attack/legit overlap
+**{fid['separability']['mean_overlap']}**. {fid['separability']['interpretation']}
+
+Most camouflaged vectors (highest overlap with legitimate traffic):
+{fid_camo}
 
 ## Calibration
 

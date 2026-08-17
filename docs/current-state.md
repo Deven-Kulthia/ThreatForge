@@ -21,7 +21,7 @@ frontend/     7-panel React command centre
 - **Tests:** 113 passing across 4 suites (data pipeline, detection, security, API)
 - **Verification gate:** `scripts/verify.sh --full` — self-checks, tests, compliance scan, typecheck, build, browser smoke
 - **Docs:** architecture, decisions, threat-model, fraud-taxonomy (generated), detection-methodology, evaluation (generated), security, demo-flow, deployment, README
-- **Deck:** `artifacts/aegis-walkthrough.pptx` — 14 slides + speaker notes, generated from
+- **Deck:** `artifacts/aegis-walkthrough.pptx` — 15 slides + speaker notes, generated from
   metrics.json by `scripts/make_deck.py` (so it cannot drift from the code)
 - **Writeup:** `docs/submission-writeup.md` — Kaggle Writeups paste target, covers all 14 criteria
 - **Presenter guide:** `docs/presenter-guide.md` — run/test commands, 3-length pitch, ~30-question
@@ -47,9 +47,9 @@ frontend/     7-panel React command centre
 - [x] Synthetic-only, network-isolated simulator, permissive licences, repo private
 
 ## Verified metrics (`artifacts/metrics.json`)
-PR-AUC **0.957** (CI 0.946–0.969) · ROC-AUC 0.996 · best-F1 **0.934** (P 0.989 / R 0.885) ·
-FPR 0.0003 · decision **p50 16.6ms / p99 31.4ms** · zero-day recall **0.781** ·
-ECE 0.0019 · VDR 0.913 · 90,256 txns at 3.83% fraud
+PR-AUC **0.944** (CI 0.931–0.957) · ROC-AUC 0.989 · best-F1 **0.929** (P 0.972 / R 0.891) ·
+FPR 0.0008 · decision **p50 13.7ms / p99 18.8ms** · zero-day recall **0.718** ·
+ECE 0.0038 · VDR 0.941 · 90,258 txns at 3.83% fraud
 
 ## Key decisions
 - No lightgbm/shap (libomp + numba unavailable on py3.14) → sklearn HistGB + exact additive explainer
@@ -72,4 +72,4 @@ WebSocket false-failure under StrictMode double-mount; unreadable alert-band cha
 graph rendering as noise before shared-infrastructure pruning.
 
 ## Test status
-113 passed · 5 module self-checks green · tsc clean · vite build clean · browser demo path verified
+113 passed · 6 module self-checks green · tsc clean · vite build clean · browser demo path verified

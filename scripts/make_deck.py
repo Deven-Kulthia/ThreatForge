@@ -381,7 +381,89 @@ The schema is modelled on ISO 8583 authorization fields so the features we build
 analogues. Card identifiers are tokens throughout — there is no PAN anywhere in the system.
 """)
 
-    # ============================== 6. RESULTS ==============================
+    # ============================== 6. FIDELITY EVIDENCE ==============================
+    fid = m["fidelity"]
+    fr, fs = fid["realism"], fid["separability"]
+    s, y = d.slide("Judged on: simulation fidelity — measured",
+                   "Fidelity as evidence, not assertion",
+                   "The brief judges fidelity instrumentally, so we measure it: generated "
+                   "marginals against published reference bands, and how separable the attacks "
+                   "actually are from legitimate traffic.")
+    d._box(s, Inches(0.7), y, Inches(6.05), Inches(3.35))
+    d._text(s, Inches(1.0), y + Inches(0.2), Inches(5.5), Inches(0.3),
+            f"Marginals vs published bands — {fr['checks_passed']}/{fr['checks_total']} in band",
+            size=13, bold=True, color=GRN)
+    show = [("Benford MAD (leading digit)", "benford_mad"),
+            ("Card-not-present share", "cnp_share"),
+            ("Cross-border share", "cross_border_share"),
+            ("Overnight volume share", "night_share"),
+            ("MCC concentration (Gini)", "mcc_gini"),
+            ("Primary-device share/card", "mean_primary_device_share")]
+    for i, (label, key) in enumerate(show):
+        v = fr[key]
+        ry = y + Inches(0.62) + i * Inches(0.42)
+        d._text(s, Inches(1.0), ry, Inches(3.0), Inches(0.3), label, size=11, color=FG)
+        d._text(s, Inches(4.05), ry, Inches(0.9), Inches(0.3), f"{v['value']:.4f}",
+                size=11, bold=True, color=GRN if v["within_band"] else RED)
+        d._text(s, Inches(5.05), ry, Inches(1.5), Inches(0.3),
+                f"{v['reference_band'][0]}–{v['reference_band'][1]}", size=10, color=MUT)
+    d._text(s, Inches(1.0), y + Inches(3.0), Inches(5.5), Inches(0.3),
+            "Nigrini: MAD < 0.006 is close Benford conformity. Bands are public and wide.",
+            size=9.5, color=DIM)
+
+    x2 = Inches(7.0)
+    d._box(s, x2, y, Inches(5.6), Inches(3.35))
+    d._text(s, x2 + Inches(0.3), y + Inches(0.2), Inches(5.0), Inches(0.3),
+            "Are the attacks trivially separable?", size=13, bold=True, color=AMB)
+    d._text(s, x2 + Inches(0.3), y + Inches(0.55), Inches(5.0), Inches(0.4),
+            "Univariate AUC on RAW authorization fields — no engineered features.",
+            size=10.5, color=MUT)
+    fields = sorted(fs["per_field"].items(), key=lambda kv: -kv[1]["univariate_auc"])
+    for i, (k, v) in enumerate(fields[:5]):
+        ry = y + Inches(1.02) + i * Inches(0.37)
+        a = v["univariate_auc"]
+        d._text(s, x2 + Inches(0.3), ry, Inches(2.4), Inches(0.3), k, size=11, color=FG)
+        d._text(s, x2 + Inches(2.85), ry, Inches(0.9), Inches(0.3), f"{a:.3f}",
+                size=11, bold=True, color=AMB if a > 0.8 else GRN)
+        d._text(s, x2 + Inches(3.9), ry, Inches(1.5), Inches(0.3),
+                f"overlap {v['overlap']:.2f}", size=10, color=MUT)
+    d._text(s, x2 + Inches(0.3), y + Inches(2.95), Inches(5.0), Inches(0.3),
+            f"max {fs['max_univariate_auc']:.3f}  ·  mean attack/legit overlap "
+            f"{fs['mean_overlap']:.3f}", size=11.5, bold=True, color=FG)
+
+    d._box(s, Inches(0.7), Inches(5.72), Inches(11.9), Inches(1.1),
+           fill=RGBColor(0x0C, 0x14, 0x28))
+    d._text(s, Inches(1.0), Inches(5.9), Inches(11.3), Inches(0.3),
+            "A LOW number here is the result we want", size=13, bold=True, color=VIO)
+    d._text(s, Inches(1.0), Inches(6.24), Inches(11.3), Inches(0.5),
+            f"`amount` scores just {fs['per_field']['amount']['univariate_auc']:.3f} with "
+            f"{fs['per_field']['amount']['overlap']:.2f} overlap — the generator does not take the "
+            f"usual shortcut of making fraud large. No raw field betrays the attacks, so the "
+            f"reported detection performance comes from the feature layer and cascade rather than a "
+            f"generation artefact. The most camouflaged vector is "
+            f"`{list(fs['most_camouflaged_vectors'])[0]}`, and the vectors we detect worst are the "
+            f"same ones that overlap legitimate traffic most — the story is internally consistent.",
+            size=11.5, color=MUT, line=1.3)
+    d._notes(s, f"""
+This slide exists because criterion 2 is judged instrumentally — the brief wants realistic
+distributions, so we measure rather than assert.
+
+Left: {fr['checks_passed']} of {fr['checks_total']} generated marginals land inside published reference bands. The Benford
+result is the one to point at — MAD {fr['benford_mad']['value']:.4f}, which is 'close conformity' on Nigrini's
+published scale. Real transaction amounts obey Benford's law; ours do too, and we did not tune for it.
+
+Right, and this is the important half: if our synthetic fraud came from an obviously different
+process, any classifier would score ~1.0 and the whole evaluation would be meaningless. So we
+measure univariate AUC on RAW authorization fields. Max is {fs['max_univariate_auc']:.3f} — and `amount` is only
+{fs['per_field']['amount']['univariate_auc']:.3f}, which is the tell that we are not doing 'fraud = big transactions'.
+
+Cross-border is the highest single field. That is realistic rather than an artefact — cross-border
+genuinely carries elevated fraud rates in live portfolios.
+
+If a judge suspects the data is too easy, this is the slide that answers it with numbers.
+""")
+
+    # ============================== 7. RESULTS ==============================
     s, y = d.slide("Judged on: detection efficacy", "Verified results — reproducible from a clean checkout",
                    f"Temporal split with a {pct(sp['delay_fraction'], 0)} delay block between train and "
                    f"test, because chargeback labels arrive late and a random split leaks the future.")

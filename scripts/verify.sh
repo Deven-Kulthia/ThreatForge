@@ -31,7 +31,7 @@ run() { # run <label> <command...>
 }
 
 step "Module self-checks"
-for m in generator attacks features detect explain; do
+for m in generator attacks features fidelity detect explain; do
   run "$m" $PY -m backend.app.$m
 done
 
@@ -69,12 +69,65 @@ fi
 
 step "Metrics artifact"
 if [ -f artifacts/metrics.json ]; then
+  # Staleness guard. Metrics generated BEFORE a change to the data or model pipeline
+  # are silently wrong, and every published figure inherits the error. Caught once
+  # already: metrics from 20:51 were quoted after a 22:16 pipeline fix.
+  STALE=$(find backend/app -name '*.py' -newer artifacts/metrics.json 2>/dev/null)
+  if [ -n "$STALE" ]; then
+    bad "metrics.json is STALE — these changed after it was generated:
+$(echo "$STALE" | sed 's/^/        /')
+      regenerate: $PY -m backend.app.evaluate"
+  else
+    ok "fresh (no backend source newer than metrics.json)"
+  fi
   ok "$($PY -c "
 import json;m=json.load(open('artifacts/metrics.json'))
 d=m['discrimination'];l=m['latency']
 print(f\"PR-AUC {d['pr_auc']:.4f} · decision p99 {l['decision_p99_ms']}ms · zero-day {m['zero_day']['unseen_recall']:.3f}\")")"
+  ok "$($PY -c "
+import json;m=json.load(open('artifacts/metrics.json'))
+f=m.get('fidelity');print('fidelity — '+f['summary'] if f else 'fidelity section MISSING')")"
 else
   bad "artifacts/metrics.json missing — run: $PY -m backend.app.evaluate"
+fi
+
+# Prose-drift guard. Hand-written docs quote headline figures; when metrics are
+# regenerated those quotes go stale silently. Caught once already: the whole doc set
+# quoted a PR-AUC from pre-fix code. Compare every quoted PR-AUC / p99 against the
+# artifact and fail on disagreement.
+step "Docs agree with metrics"
+if [ -f artifacts/metrics.json ]; then
+  DRIFT=$($PY - <<'PYEOF'
+import json, re, pathlib
+m = json.load(open("artifacts/metrics.json"))
+want = {
+    "PR-AUC": f"{m['discrimination']['pr_auc']:.3f}",
+    "p99": f"{m['latency']['decision_p99_ms']:.1f}",
+}
+pats = {
+    "PR-AUC": re.compile(r"PR-AUC[^\d\n]{0,24}(\d\.\d{3})"),
+    "p99": re.compile(r"p99[^\d\n]{0,12}(\d{1,3}\.\d)\s?ms"),
+}
+bad = []
+for f in ("README.md", "docs/current-state.md", "docs/submission-writeup.md",
+          "docs/presenter-guide.md", "docs/architecture.md", "docs/demo-flow.md"):
+    p = pathlib.Path(f)
+    if not p.exists():
+        continue
+    for i, line in enumerate(p.read_text().splitlines(), 1):
+        for key, rx in pats.items():
+            for got in rx.findall(line):
+                if got != want[key]:
+                    bad.append(f"{f}:{i} quotes {key} {got}, metrics say {want[key]}")
+print("\n".join(bad))
+PYEOF
+)
+  if [ -n "$DRIFT" ]; then
+    bad "docs quote figures that disagree with metrics.json:
+$(echo "$DRIFT" | sed 's/^/        /')"
+  else
+    ok "quoted PR-AUC and p99 match metrics.json"
+  fi
 fi
 
 if [ "$FULL" = "1" ]; then

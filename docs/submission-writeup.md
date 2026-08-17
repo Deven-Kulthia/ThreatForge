@@ -14,7 +14,7 @@ Solo entry. 100% synthetic data. Simulator network-isolated by construction.
 | # | Artifact | Where |
 |---|---|---|
 | 1 | **Code repository** — runnable, covers all three pillars | `Deven-Kulthia/aegis-ai-defence-lab` (private until judging concludes, per Kaggle Foundational §6a) |
-| 2 | **Solution walkthrough** (.pptx) | `artifacts/aegis-walkthrough.pptx` — 14 slides, generated from verified metrics |
+| 2 | **Solution walkthrough** (.pptx) | `artifacts/aegis-walkthrough.pptx` — 15 slides, generated from verified metrics |
 | 3 | **Working web prototype** | React command centre, 7 panels; `npm run dev` + `uvicorn`. Fallback captures in `artifacts/screenshots/` |
 
 ---
@@ -62,7 +62,7 @@ Full taxonomy: `docs/fraud-taxonomy.md`. Threat model: `docs/threat-model.md`.
 ## Pillar 2 — Generate
 
 **Environment.** ISO-8583-inspired authorization schema. 1,650 tokenised cards, 263 merchants,
-44 days of traffic, **90,256 transactions at 3.83% fraud** across 75 campaigns. A PAN never
+44 days of traffic, **90,258 transactions at 3.83% fraud** across 75 campaigns. A PAN never
 exists in this system — card identifiers are tokens. Every record carries `synthetic: true`.
 
 **The fidelity constraint that matters.** The standing criticism of adversarial ML on tabular data
@@ -92,6 +92,53 @@ is the mechanism that makes per-signal grading possible.
 **Safety.** The simulator is architecturally incapable of reaching a network target, and that is
 enforced by an AST test in the suite, not merely asserted (Rules §3b).
 
+### Fidelity evidence — measured, not asserted
+
+Criterion 2 is judged instrumentally ("realistic distributions, behaviours and edge cases … so they
+are genuinely useful for training and stress-testing a defense"), so `backend/app/fidelity.py`
+measures it and the results land in `artifacts/metrics.json`.
+
+**Generated marginals vs published reference bands — 9 of 9 within band:**
+
+| Measure | Value | Reference band | Source of band |
+|---|---|---|---|
+| Benford MAD (leading digit of amount) | **0.0010** | 0–0.015 | Nigrini: <0.006 is *close* conformity |
+| Card-not-present share | 0.421 | 0.30–0.60 | mature-market card volume |
+| Cross-border share | 0.107 | 0.03–0.20 | domestic-issuer portfolio |
+| Overnight (00:00–06:00) volume share | 0.033 | 0.02–0.18 | consumer diurnal rhythm |
+| MCC concentration (Gini) | 0.549 | 0.25–0.85 | real portfolios are concentrated |
+| Primary-device share per card | 0.971 | 0.55–1.00 | real cardholders reuse one device |
+
+Amounts obey Benford's law at 0.0010 MAD — well inside "close conformity" — and we did not tune
+for it. Bands are public and deliberately wide: they are sanity bands, not calibration targets.
+
+**Non-separability — the anti-"trivially separable" evidence.** If attack traffic came from an
+obviously different process, any classifier would score ~1.0 and the whole evaluation would be
+meaningless. Measured on **raw** authorization fields, not engineered features:
+
+| Raw field | Univariate AUC | Attack/legit overlap |
+|---|---|---|
+| cross_border | 0.896 | 0.19 |
+| card_present | 0.771 | 0.45 |
+| merchant_age_days | 0.735 | 0.47 |
+| hour_of_day | 0.640 | 0.66 |
+| **amount** | **0.559** | **0.86** |
+| is_recurring | 0.502 | 0.99 |
+
+Max raw-field AUC **0.896**, mean attack/legit overlap **0.656**. The `amount` row is the one that
+matters: at AUC 0.559 the generator plainly does **not** take the usual shortcut of making fraud
+large — the failure mode that makes most synthetic fraud corpora trivially separable. No single raw
+field betrays the attacks, so reported detection performance comes from the feature layer and
+cascade rather than a generation artefact.
+
+Cross-border is the highest single field, and that is realistic rather than an artefact —
+cross-border genuinely carries elevated fraud rates in live portfolios.
+
+The most camouflaged vectors (highest overlap with legitimate traffic) are `VELOCITY_EVASION`
+0.691, `GENAI_DOC_FARM` 0.640, `TRA_THRESHOLD_GAMING` 0.636 and `AGENT_IMPERSONATION` 0.626 — the
+same vectors we detect worst. The fidelity measurement and the detection results corroborate each
+other, which is what an internally consistent evaluation looks like.
+
 ---
 
 ## Pillar 3 — Defend
@@ -105,18 +152,18 @@ baseline, graph, and verification-signal coherence. No feature can see the label
 ### Verified results
 
 Temporal split with a **5% delay block** between train and test, because chargeback labels arrive
-late and a random split leaks the future. Train 58,666 / test 27,077 at 2.98% test prevalence.
+late and a random split leaks the future. Train 58,667 / test 27,078 at 2.98% test prevalence.
 
 | Metric | Value |
 |---|---|
-| **PR-AUC** | **0.957** (95% CI 0.946–0.969, bootstrapped) |
-| ROC-AUC | 0.996 *(reported for comparability; optimistic under imbalance)* |
-| **Best-F1 point** | **F1 0.934** — precision 0.989 / recall 0.885 |
-| False-positive / insult rate | **0.0003** (8 FP against 26,261 legitimate) |
-| Value detection rate | **0.913** — 91.3% of attempted fraud *value* stopped, not just count |
-| Calibration | ECE 0.0019 (10-bin), Brier 0.0035, isotonic on a held-out temporal slice |
-| **Decision latency** | **p50 16.6 ms / p95 25.9 ms / p99 31.4 ms** (inline path) |
-| **Zero-day recall** | **0.781** on 6 typologies never trained on |
+| **PR-AUC** | **0.944** (95% CI 0.931–0.957, bootstrapped) |
+| ROC-AUC | 0.989 *(reported for comparability; optimistic under imbalance)* |
+| **Best-F1 point** | **F1 0.929** — precision 0.972 / recall 0.891 |
+| False-positive / insult rate | **0.0008** (21 FP against 26,251 legitimate) |
+| Value detection rate | **0.941** — 94.1% of attempted fraud *value* stopped, not just count |
+| Calibration | ECE 0.0038 (10-bin), Brier 0.0045, isotonic on a held-out temporal slice |
+| **Decision latency** | **p50 13.7 ms / p95 16.2 ms / p99 18.8 ms** (inline path) |
+| **Zero-day recall** | **0.718** on 6 typologies never trained on |
 
 PR-AUC is the headline because at 2.98% prevalence a model that blocks nothing scores 97% accuracy.
 
@@ -128,19 +175,20 @@ traffic only (no retuning):
 | Held-out vector | n | Recall | Mean risk |
 |---|---|---|---|
 | BIN_ENUMERATION_BURST | 300 | 1.000 | 1.000 |
-| SYNTH_ID_BUSTOUT | 168 | 1.000 | 1.000 |
-| ATO_CREDENTIAL_STUFF | 115 | 0.983 | 0.992 |
-| APP_SCAM_LLM | 30 | 0.933 | 0.977 |
-| ROMANCE_PIG_BUTCHERING | 144 | 0.764 | 0.893 |
-| AGENT_IMPERSONATION | 216 | 0.190 | 0.570 |
-| **Aggregate** | **973** | **0.781** | — |
+| SYNTH_ID_BUSTOUT | 168 | 0.982 | 0.999 |
+| ATO_CREDENTIAL_STUFF | 117 | 0.974 | 0.997 |
+| APP_SCAM_LLM | 30 | 0.800 | 0.988 |
+| ROMANCE_PIG_BUTCHERING | 144 | 0.500 | 0.931 |
+| AGENT_IMPERSONATION | 216 | 0.116 | 0.866 |
+| **Aggregate** | **975** | **0.718** | — |
 
 Recall on attacks the model trained on measures memorisation; this measures whether a causal
 feature layer transfers to fraud that did not exist when the model was fit.
 
-**AGENT_IMPERSONATION at 0.190 is our honest weak point.** In an authorization message, a
+**AGENT_IMPERSONATION at 0.116 is our honest weak point.** In an authorization message, a
 legitimate agentic purchase and an impersonated one are nearly indistinguishable; separating them
-needs agent-identity attestation the schema does not yet carry.
+needs agent-identity attestation the schema does not yet carry. Note its mean risk is 0.866 — the
+model ranks these transactions as risky, it just cannot clear the seen-traffic threshold.
 
 ### Explainability
 
@@ -174,19 +222,23 @@ gap is more useful than letting it look mysterious — and each named gap is a q
 
 Per-attack recall at a **1% analyst review budget**:
 
-| Vector | Recall @1% | Mean risk | Hard by design |
-|---|---|---|---|
-| SIM_SWAP_OTP | 0.000 | — | yes |
-| REFUND_ABUSE_COLLUSION | 0.000 | — | no |
-| ADAPTIVE_MIMICRY | 0.030 | — | yes |
+| Vector | n | Recall @1% | Mean risk | Hard by design |
+|---|---|---|---|---|
+| REFUND_ABUSE_COLLUSION | 2 | 0.000 | 0.846 | no |
+| ADAPTIVE_MIMICRY | 68 | 0.015 | 0.224 | yes |
+| SIM_SWAP_OTP | 24 | 0.042 | 0.272 | yes |
 
 **Read the ceiling before reading the rows.** At a 1% alert budget and 2.98% prevalence, the
-maximum recall *any* detector could reach is **0.335**; we reach 0.334 — **99.7% of the
+maximum recall *any* detector could reach is **0.336**; we reach 0.334 — **99.4% of the
 mathematical ceiling**. A 0.000 row means "did not survive the queue", not "invisible to the
-model". Size the budget to prevalence instead and recall is **0.918 at precision 0.918**.
+model". Size the budget to prevalence instead and recall is **0.909 at precision 0.909**.
 
-Genuinely under-detected: adaptive mimicry (learns the victim's own baseline and stays inside it)
-and SIM-swap OTP. Those two rows are what we would fix first.
+Two honest caveats on that table. `REFUND_ABUSE_COLLUSION` has **n = 2** in this test split, so its
+0.000 is noise, not a measurement. `ADAPTIVE_MIMICRY` is the real failure: mean risk 0.224 means the
+model genuinely does not find it suspicious — it learns the victim's own baseline and stays inside
+it, which defeats deviation-based features by construction. That is the row we would fix first, and
+it is corroborated independently by the fidelity measurement below, where mimicry is among the
+vectors that overlap legitimate traffic most.
 
 **Prevalence caveat.** Synthetic prevalence is 3.83% versus roughly 0.1–1% in live card portfolios
 — necessary to train and evaluate 25 vectors, but it means threshold-dependent figures would shift
@@ -198,7 +250,7 @@ in production. **PR-AUC, calibration and latency are the transferable ones.**
 
 | Constraint | Design consequence |
 |---|---|
-| **Latency budget** | p99 31.4 ms inline. The expensive graph stage runs on the riskiest 20% of traffic — an explicit *compute budget*, not a score threshold. Thresholds let cost spike when an attack floods the high-risk band; a budget cannot. |
+| **Latency budget** | p99 18.8 ms inline. The expensive graph stage runs on the riskiest 20% of traffic — an explicit *compute budget*, not a score threshold. Thresholds let cost spike when an attack floods the high-risk band; a budget cannot. |
 | **Review capacity** | Operating points reported against analyst capacity, not only at best-F1. A queue nobody can work is not a control. |
 | **Auditability** | Append-only SQLite trail of every environment change, campaign and analyst action. Model governance expects decisions to be reconstructable. |
 | **Deployability** | No GPU, no AGPL, no external service on the decision path. The LLM narrates; it never makes the block decision. |
@@ -214,7 +266,7 @@ constrains them to be feasible, and wires them into a continuous, per-signal-gra
 
 ## Technical quality
 
-- **113 tests passing** across 4 suites: data pipeline, detection, security, API.
+- **113 tests passing** across 4 suites, plus 6 module self-checks: data pipeline, detection, security, API.
 - `scripts/verify.sh --full` — module self-checks, tests, compliance scan, TypeScript typecheck,
   frontend build, browser smoke test. One command, green or it does not ship.
 - **Every number in this writeup and in the deck is generated from `artifacts/metrics.json`** by

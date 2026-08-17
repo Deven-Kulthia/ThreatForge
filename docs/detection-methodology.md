@@ -154,7 +154,7 @@ Isotonic regression on a held-out temporal slice.
 calibration a threshold has no interpretable meaning. With it, "block above 0.9" implies
 roughly a 1-in-10 false-block rate — a statement a risk owner can actually reason about.
 
-Measured: **ECE 0.0019, Brier 0.0035.**
+Measured: **ECE 0.0038, Brier 0.0045.**
 
 ### Three disjoint temporal slices
 
@@ -198,7 +198,7 @@ held-out-attack-type experiment — which we then run *deliberately* and separat
 | **PR-AUC** (headline, with bootstrap 95% CI) | The correct summary under heavy imbalance |
 | ROC-AUC | Reported for comparability, and labelled as optimistic |
 | Best-F1 operating point | Conventional reference point |
-| **Recall at a 1% alert budget** | The operational question: what does an analyst team actually catch? Reported *with its mathematical ceiling*, because at 3.8% prevalence a 1% budget caps recall at 0.335 regardless of model quality |
+| **Recall at a 1% alert budget** | The operational question: what does an analyst team actually catch? Reported *with its mathematical ceiling*, because at 3.8% prevalence a 1% budget caps recall at 0.336 regardless of model quality |
 | Prevalence-matched operating point | Recall when the budget is not the binding constraint |
 | **Value detection rate** | Fraud is a money problem, not a count problem |
 | **Insult rate** | False declines have a real customer cost |

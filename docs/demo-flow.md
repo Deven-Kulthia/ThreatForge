@@ -50,10 +50,10 @@ would flatten everything else into invisibility."
 
 **Then the right panel — this is the credibility moment:**
 
-- **PR-AUC 0.957** with a 95% confidence interval — "PR-AUC, not accuracy, because at this
+- **PR-AUC 0.944** with a 95% confidence interval — "PR-AUC, not accuracy, because at this
   class imbalance accuracy is meaningless. The interval is bootstrapped."
 - **Decision p99 31 ms** — "that's the inline authorization path, not batch throughput."
-- **Zero-day recall 0.781** — "recall on six attack types the model was never trained on."
+- **Zero-day recall 0.718** — "recall on six attack types the model was never trained on."
 
 **Say:** "Every number here comes from `evaluate.py`. None of it is hand-written, and it
 regenerates from a clean checkout."
@@ -161,13 +161,13 @@ Three things to land:
    test, because chargeback labels arrive weeks late. Random splits leak the future."
 2. **Per-attack recall, worst first** — "the hard cases are meant to be hard. 12 of 25
    vectors are deliberately built to overlap legitimate behaviour."
-3. **Zero-day table** — "six vectors removed from training entirely, 0.781 recall at a
+3. **Zero-day table** — "six vectors removed from training entirely, 0.718 recall at a
    threshold calibrated on seen traffic only."
 
 **If asked about the 1% alert-budget recall (0.334):** "That's bounded by the budget, not
-the model — the mathematical ceiling at this prevalence is 0.335. We're at 99.7% of the
+the model — the mathematical ceiling at this prevalence is 0.336. We're at 99.7% of the
 maximum any detector could achieve within that review capacity. The prevalence-matched
-figure is 0.918."
+figure is 0.909."
 
 **Screen:** Audit Trail — "every environment change, campaign and analyst action is recorded
 append-only. Model governance expects decisions to be reconstructable."
