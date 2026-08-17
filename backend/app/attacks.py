@@ -523,6 +523,11 @@ class Ctx:
         self.rng = rng
         self.tag = tag
         self._n = 0
+        # Per-campaign unique token. Without this, two campaigns of the SAME attack type
+        # (successive waves, or a relaunch from the UI) both start their counter at 1 and
+        # emit colliding transaction_ids — which silently corrupts any join on that key.
+        # Derived from the seeded rng, so it stays reproducible for a given seed.
+        self._uid = f"{int(rng.integers(0, 1 << 30)):09d}"
         self._extra: dict[str, dict] = {}
         # Campaign start. Defaults to the end of the observed history (useful for a
         # standalone "what happens next" simulation), but callers normally schedule
@@ -548,7 +553,7 @@ class Ctx:
     # --- identifiers ---
     def txid(self) -> str:
         self._n += 1
-        return f"{self.tag}_{self._n:07d}"
+        return f"{self.tag}_{self._uid}_{self._n:06d}"
 
     def scenario(self, attack: str) -> str:
         return f"SCN-{attack}-{int(self.rng.integers(10_000, 99_999))}"
@@ -1312,6 +1317,7 @@ def run_all(
     strength: float = 0.6,
     seed: int = 0,
     spread: bool = True,
+    phase: float = 0.0,
 ) -> list[Campaign]:
     """Simulate every attack in the taxonomy — the 'at scale' entry point.
 
@@ -1319,6 +1325,11 @@ def run_all(
     window (between 15% and 90% of it), so the resulting dataset has fraud distributed
     over time. That is both more realistic and a precondition for honest temporal
     train/test splitting.
+
+    `phase` rotates the schedule. Calling run_all several times with different phases
+    makes every attack type appear at several points in the timeline, so a temporal split
+    has all vectors on both sides. Without that, a temporal split silently becomes a
+    held-out-attack-type experiment — a much harder and quite different question.
     """
     ids = list(SIMULATORS)
     if not spread or not len(hist):
@@ -1328,7 +1339,7 @@ def run_all(
     span = pd.Timestamp(hist["timestamp"].max()) - t_min
     out = []
     for i, a in enumerate(ids):
-        frac = 0.15 + 0.75 * (i / max(len(ids) - 1, 1))
+        frac = 0.15 + 0.75 * (((i / max(len(ids) - 1, 1)) + phase) % 1.0)
         out.append(run_attack(a, pop, hist, strength, seed + i, t0=t_min + span * frac))
     return out
 
@@ -1365,6 +1376,13 @@ def demo() -> None:
     # Attack traffic must stay a realistic minority of the stream.
     rate = total / (len(hist) + total)
     assert 0.001 < rate < 0.35, f"implausible fraud rate {rate:.3%}"
+
+    # Transaction ids must be globally unique across every campaign. Collisions here
+    # silently corrupt joins between the stream and its scores.
+    ids = [t for c in camps for t in c.transaction_ids]
+    assert len(ids) == len(set(ids)), \
+        f"duplicate transaction_ids: {len(ids) - len(set(ids))} collisions"
+    assert not set(ids) & set(hist["transaction_id"]), "attack ids collide with history"
 
     hard = sum(1 for c in camps if c.spec.hard_to_detect)
     print(

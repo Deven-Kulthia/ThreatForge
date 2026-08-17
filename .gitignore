@@ -30,12 +30,17 @@ __pycache__/
 node_modules/
 frontend/dist/
 frontend/.vite/
+*.tsbuildinfo
 *.local
 
 # --- artifacts ---
+# metrics.json and screenshots ARE tracked: the README and deck cite them as evidence,
+# and a reviewer should be able to see the reported numbers without running the harness.
+# Runtime state (audit database, generated datasets) is not.
 *.log
 data/generated/
-artifacts/
+artifacts/*.db
+artifacts/*.sqlite3
 *.db
 *.sqlite3
 
