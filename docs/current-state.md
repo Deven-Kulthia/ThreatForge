@@ -24,7 +24,12 @@ frontend/     7-panel React command centre
 - **Deck:** `artifacts/aegis-walkthrough.pptx` — 14 slides + speaker notes, generated from
   metrics.json by `scripts/make_deck.py` (so it cannot drift from the code)
 - **Writeup:** `docs/submission-writeup.md` — Kaggle Writeups paste target, covers all 14 criteria
-- **Pushed:** 5 commits to private repo `Deven-Kulthia/aegis-ai-defence-lab`
+- **Presenter guide:** `docs/presenter-guide.md` — run/test commands, 3-length pitch, ~30-question
+  judge Q&A bank, memorised-numbers sheet, pre-demo checklist, failure recovery
+- **Compliance audit (2026-08-18):** repo confirmed private (unauth API → 404); 41 Python + 121 npm
+  packages audited, zero AGPL/GPL/SSPL; 21 security tests enforce synthetic-only, no-PAN,
+  Luhn-invalid tokens, truncated IPs, AST-level network isolation, responsible-AI taxonomy check
+- **Pushed:** 7 commits to private repo `Deven-Kulthia/aegis-ai-defence-lab`
 
 ## Next
 1. Judge simulation against all 14 official criteria, then fix what it surfaces

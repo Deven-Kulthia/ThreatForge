@@ -113,7 +113,7 @@ late and a random split leaks the future. Train 58,666 / test 27,077 at 2.98% te
 | ROC-AUC | 0.996 *(reported for comparability; optimistic under imbalance)* |
 | **Best-F1 point** | **F1 0.934** — precision 0.989 / recall 0.885 |
 | False-positive / insult rate | **0.0003** (8 FP against 26,261 legitimate) |
-| Value detection rate | **0.913** — ₹300,768 of ₹329,366 attempted fraud value stopped |
+| Value detection rate | **0.913** — 91.3% of attempted fraud *value* stopped, not just count |
 | Calibration | ECE 0.0019 (10-bin), Brier 0.0035, isotonic on a held-out temporal slice |
 | **Decision latency** | **p50 16.6 ms / p95 25.9 ms / p99 31.4 ms** (inline path) |
 | **Zero-day recall** | **0.781** on 6 typologies never trained on |
