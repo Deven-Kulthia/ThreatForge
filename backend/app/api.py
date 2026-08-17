@@ -18,7 +18,7 @@ import json
 import sqlite3
 import threading
 import time
-from contextlib import closing
+from contextlib import asynccontextmanager, closing
 from pathlib import Path
 from typing import Any
 
@@ -165,10 +165,17 @@ ENGINE = Engine()
 # API
 # --------------------------------------------------------------------------------------
 
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    _audit_init()
+    yield
+
+
 app = FastAPI(
     title="Aegis — AI Defence Lab for Payment Security",
     description="Closed-loop adversarial AI for GenAI-era payment fraud. " + SAFETY_NOTICE,
     version="1.0.0",
+    lifespan=lifespan,
 )
 app.add_middleware(
     CORSMiddleware,
@@ -180,11 +187,6 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def _startup() -> None:
-    _audit_init()
 
 
 class BootRequest(BaseModel):
