@@ -516,15 +516,20 @@ class Campaign:
 class Ctx:
     """Shared state for building attack transactions against a synthetic population."""
 
-    def __init__(self, pop, hist: pd.DataFrame, rng: np.random.Generator, tag: str = "atk"):
+    def __init__(self, pop, hist: pd.DataFrame, rng: np.random.Generator, tag: str = "atk",
+                 t0: pd.Timestamp | None = None):
         self.pop = pop
         self.hist = hist
         self.rng = rng
         self.tag = tag
         self._n = 0
         self._extra: dict[str, dict] = {}
-        # Attack traffic begins after the observed history, so temporal splits stay honest.
-        self.t0: pd.Timestamp = (
+        # Campaign start. Defaults to the end of the observed history (useful for a
+        # standalone "what happens next" simulation), but callers normally schedule
+        # campaigns *within* the window: real fraud is interleaved with legitimate
+        # traffic, not appended to it, and a detector must be trainable on a temporal
+        # split where positives appear throughout.
+        self.t0: pd.Timestamp = pd.Timestamp(t0) if t0 is not None else (
             pd.Timestamp(hist["timestamp"].max()) if len(hist) else pd.Timestamp("2026-07-31")
         )
         self._cards = pop.cards.set_index("card_token")
@@ -1292,11 +1297,12 @@ def run_attack(
     hist: pd.DataFrame,
     strength: float = 0.6,
     seed: int = 0,
+    t0: pd.Timestamp | None = None,
 ) -> Campaign:
     """Simulate one attack campaign against a synthetic population."""
     if attack_id not in SIMULATORS:
         raise KeyError(f"unknown attack: {attack_id}")
-    ctx = Ctx(pop, hist, np.random.default_rng(seed), tag=attack_id.lower()[:12])
+    ctx = Ctx(pop, hist, np.random.default_rng(seed), tag=attack_id.lower()[:12], t0=t0)
     return SIMULATORS[attack_id](ctx, float(strength))
 
 
@@ -1305,12 +1311,26 @@ def run_all(
     hist: pd.DataFrame,
     strength: float = 0.6,
     seed: int = 0,
+    spread: bool = True,
 ) -> list[Campaign]:
-    """Simulate every attack in the taxonomy. This is the 'at scale' entry point."""
-    return [
-        run_attack(aid, pop, hist, strength, seed + i)
-        for i, aid in enumerate(SIMULATORS)
-    ]
+    """Simulate every attack in the taxonomy — the 'at scale' entry point.
+
+    With `spread=True` campaigns are scheduled at staggered points across the observed
+    window (between 15% and 90% of it), so the resulting dataset has fraud distributed
+    over time. That is both more realistic and a precondition for honest temporal
+    train/test splitting.
+    """
+    ids = list(SIMULATORS)
+    if not spread or not len(hist):
+        return [run_attack(a, pop, hist, strength, seed + i) for i, a in enumerate(ids)]
+
+    t_min = pd.Timestamp(hist["timestamp"].min())
+    span = pd.Timestamp(hist["timestamp"].max()) - t_min
+    out = []
+    for i, a in enumerate(ids):
+        frac = 0.15 + 0.75 * (i / max(len(ids) - 1, 1))
+        out.append(run_attack(a, pop, hist, strength, seed + i, t0=t_min + span * frac))
+    return out
 
 
 def demo() -> None:
@@ -1332,9 +1352,15 @@ def demo() -> None:
         assert list(c.transactions.columns) == list(TRANSACTION_FIELDS), "column contract"
         assert md["expected_detection_signals"], f"{c.attack_type} declares no signals"
         assert md["mitre_atlas"], f"{c.attack_type} unmapped to ATLAS"
-        assert c.transactions["timestamp"].min() >= hist["timestamp"].max(), \
-            f"{c.attack_type} leaks into the history window"
         total += len(c.transactions)
+
+    # Campaigns must be spread across the window, not bunched at the end — otherwise a
+    # temporal split has no positives to train on.
+    starts = pd.Series([c.transactions["timestamp"].min() for c in camps])
+    lo, hi = hist["timestamp"].min(), hist["timestamp"].max()
+    frac = (starts - lo) / (hi - lo)
+    assert frac.min() < 0.35 and frac.max() > 0.65, \
+        f"campaigns not spread across the window: {frac.min():.2f}-{frac.max():.2f}"
 
     # Attack traffic must stay a realistic minority of the stream.
     rate = total / (len(hist) + total)
