@@ -105,7 +105,7 @@ export default function Stream({ nonce }: { nonce: number }) {
         ) : shown.length === 0 ? (
           <Empty icon={<ShieldAlert size={22} />}>
             No high or critical transactions in the current window. Launch an attack campaign
-            from <span className="text-slate-400">Red Team</span> to see the defence respond.
+            from <span className="text-slate-400">Attack Simulator</span> to see the defence respond.
           </Empty>
         ) : (
           <div className="max-h-[600px] overflow-auto">

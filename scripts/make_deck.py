@@ -177,8 +177,9 @@ def build(m: dict) -> None:
 
     d._box(s, Inches(0.95), Inches(4.85), Inches(5.6), Inches(0.05), fill=BORDER, line=None)
     d._text(s, Inches(0.95), Inches(5.15), Inches(11.5), Inches(1.0),
-            [("A closed-loop adversarial system: the attacks it invents train the defence, "
-              "and the defence's blind spots decide the next attack.", {"size": 14, "color": MUT}),
+            [("A closed-loop red-team / blue-team system: the attacks it invents train the "
+              "defence, and the defence's blind spots decide the next attack.",
+              {"size": 14, "color": MUT}),
              (f"{ds['attack_vectors']} GenAI-era attack vectors  ·  PR-AUC {disc['pr_auc']:.3f}  ·  "
               f"p99 {lat['decision_p99_ms']:.0f} ms inline  ·  zero-day recall {zd['unseen_recall']:.3f}",
               {"size": 13, "color": FG, "bold": True, "space": 0})], size=14)
@@ -235,7 +236,7 @@ unseen fraud yourself — which is what the red-team half of this system does.
 """)
 
     # ============================== 3. THE LOOP ==============================
-    s, y = d.slide("Architecture", "One loop, three stages, measured at every hand-off",
+    s, y = d.slide("Architecture", "Red team and blue team, wired into one loop",
                    "Attacks carry declared ground truth, so detection is graded per-signal — "
                    "we know whether a catch was for the right reason or luck.")
     stages = [
@@ -272,7 +273,7 @@ unseen fraud yourself — which is what the red-team half of this system does.
     fb = Inches(3.55)
     d._box(s, Inches(0.72), fb, Inches(11.88), Inches(1.5), fill=RGBColor(0x0C, 0x14, 0x28))
     d._text(s, Inches(1.05), fb + Inches(0.22), Inches(11.2), Inches(0.3),
-            "The return path — what makes it a loop, not a pipeline",
+            "The return path — what makes red and blue one loop, not a pipeline",
             size=14, bold=True, color=VIO)
     d._text(s, Inches(1.05), fb + Inches(0.62), Inches(11.2), Inches(0.7),
             f"Each attack declares the signals it should trip. Detection is scored against that "

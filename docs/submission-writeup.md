@@ -31,6 +31,13 @@ trip before it runs**, detection is graded per-signal — so a miss is attributa
 defence's blind spots become the specification for the next round of attacks. That return path is
 what makes this a loop rather than a pipeline.
 
+The brief asks entrants to "take on both sides of the problem" in a **red team / blue team**
+challenge, so both sides are first-class here and the dashboard labels them as such. The **red
+team** (Attack Simulator) generates attacks and declares, up front, the signals that should catch
+each one. The **blue team** (Live Stream, Investigate, Fraud Network, Performance) detects, explains
+and then reports back *which declared signals it missed*. Neither half exists merely to serve the
+other — the loop runs between them.
+
 ---
 
 ## Pillar 1 — Identify

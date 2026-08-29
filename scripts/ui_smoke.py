@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SHOTS = ROOT / "artifacts" / "screenshots"
 BASE = "http://localhost:5173"
 
-TABS = ["Overview", "Red Team", "Live Stream", "Investigate",
+TABS = ["Overview", "Attack Simulator", "Live Stream", "Investigate",
         "Fraud Network", "Performance", "Audit Trail"]
 
 
@@ -50,7 +50,7 @@ def main() -> int:
         page.screenshot(path=str(SHOTS / "01-overview.png"), full_page=True)
 
         # --- launch an attack from the red-team panel ---
-        page.get_by_role("button", name="Red Team").click()
+        page.get_by_role("button", name="Attack Simulator").click()
         page.wait_for_timeout(900)
         page.screenshot(path=str(SHOTS / "02-red-team.png"), full_page=True)
 

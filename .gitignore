@@ -49,3 +49,6 @@ artifacts/*.sqlite3
 Thumbs.db
 .idea/
 .vscode/
+
+# Intermediate render for the project-explainer PDF; the PDF itself is the artifact.
+artifacts/aegis-project-explained.html

@@ -184,7 +184,7 @@ export default function Overview({ env, nonce, onGoto }: {
         {camps === null ? <Skeleton rows={3} />
           : camps.length === 0 ? (
             <Empty icon={<Swords size={22} />}>
-              No campaigns launched yet. Open <span className="text-slate-400">Red Team</span> to
+              No campaigns launched yet. Open <span className="text-slate-400">Attack Simulator</span> to
               simulate one of {taxonomy?.count ?? 25} attack vectors against the live environment.
             </Empty>
           ) : (

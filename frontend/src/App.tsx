@@ -14,14 +14,24 @@ import Audit from './panels/Audit'
 
 type TabId = 'overview' | 'simulator' | 'stream' | 'investigate' | 'graph' | 'performance' | 'audit'
 
-const TABS: { id: TabId; label: string; icon: typeof Activity; hint: string }[] = [
-  { id: 'overview', label: 'Overview', icon: ShieldCheck, hint: 'Executive posture' },
-  { id: 'simulator', label: 'Red Team', icon: Swords, hint: 'Attack simulator' },
-  { id: 'stream', label: 'Live Stream', icon: Activity, hint: 'Authorization feed' },
-  { id: 'investigate', label: 'Investigate', icon: Search, hint: 'Alerts & explainability' },
-  { id: 'graph', label: 'Fraud Network', icon: Network, hint: 'Entity graph' },
-  { id: 'performance', label: 'Performance', icon: BarChart3, hint: 'Evaluation metrics' },
-  { id: 'audit', label: 'Audit Trail', icon: FileClock, hint: 'Append-only log' },
+// `side` groups the tabs into the brief's own red-team / blue-team framing: "you take on both
+// sides of the problem". Both halves are first-class here — the red team declares what should
+// catch each attack, the blue team reports back which declared signals it missed.
+type Side = 'red' | 'blue' | null
+
+const SIDE_LABEL: Record<'red' | 'blue', { text: string; cls: string }> = {
+  red: { text: 'Red team', cls: 'text-rose-400/80' },
+  blue: { text: 'Blue team', cls: 'text-sky-400/80' },
+}
+
+const TABS: { id: TabId; label: string; icon: typeof Activity; hint: string; side: Side }[] = [
+  { id: 'overview', label: 'Overview', icon: ShieldCheck, hint: 'Executive posture', side: null },
+  { id: 'simulator', label: 'Attack Simulator', icon: Swords, hint: 'Red team — generate attacks', side: 'red' },
+  { id: 'stream', label: 'Live Stream', icon: Activity, hint: 'Blue team — authorization feed', side: 'blue' },
+  { id: 'investigate', label: 'Investigate', icon: Search, hint: 'Blue team — alerts & explainability', side: 'blue' },
+  { id: 'graph', label: 'Fraud Network', icon: Network, hint: 'Blue team — entity graph', side: 'blue' },
+  { id: 'performance', label: 'Performance', icon: BarChart3, hint: 'Blue team — evaluation metrics', side: 'blue' },
+  { id: 'audit', label: 'Audit Trail', icon: FileClock, hint: 'Append-only log', side: null },
 ]
 
 export default function App() {
@@ -86,7 +96,9 @@ export default function App() {
           <div className="ml-2 hidden h-8 w-px bg-[#26314a] lg:block" />
 
           <p className="hidden max-w-md text-[11px] leading-snug text-slate-500 lg:block">
-            Closed-loop adversarial system: <span className="text-slate-400">identify</span> →{' '}
+            Closed-loop <span className="text-rose-400/90">red team</span> /{' '}
+            <span className="text-sky-400/90">blue team</span> system:{' '}
+            <span className="text-slate-400">identify</span> →{' '}
             <span className="text-slate-400">generate</span> →{' '}
             <span className="text-slate-400">defend</span>
           </p>
@@ -104,23 +116,39 @@ export default function App() {
           </div>
         </div>
 
-        {/* ---------- tabs ---------- */}
+        {/* ---------- tabs, grouped by red team / blue team ---------- */}
         <nav aria-label="Sections"
-             className="mx-auto flex max-w-[1600px] gap-1 overflow-x-auto px-4 pb-2">
-          {TABS.map(t => {
+             className="mx-auto flex max-w-[1600px] items-center gap-1 overflow-x-auto px-4 pb-2">
+          {TABS.map((t, i) => {
             const Icon = t.icon
             const active = tab === t.id
+            const opensGroup = t.side !== null && TABS[i - 1]?.side !== t.side
+            const closesGroup = t.side !== null && TABS[i + 1]?.side !== t.side
             return (
-              <button key={t.id} onClick={() => setTab(t.id)} title={t.hint}
-                aria-current={active ? 'page' : undefined}
-                className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5
-                  text-[12px] font-medium transition-colors duration-200
-                  ${active
-                    ? 'bg-[#1c2942] text-slate-100 shadow-[inset_0_0_0_1px_#2f3f60]'
-                    : 'text-slate-500 hover:bg-[#111a2b] hover:text-slate-300'}`}>
-                <Icon size={14} strokeWidth={2} aria-hidden="true" />
-                {t.label}
-              </button>
+              <div key={t.id} className="flex shrink-0 items-center gap-1">
+                {opensGroup && (
+                  <span className="ml-2 flex shrink-0 items-center gap-1.5 pl-2
+                                   border-l border-slate-700/60">
+                    <span aria-hidden="true"
+                          className={`size-1.5 rounded-full ${t.side === 'red' ? 'bg-rose-500' : 'bg-sky-500'}`} />
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider
+                                     ${SIDE_LABEL[t.side as 'red' | 'blue'].cls}`}>
+                      {SIDE_LABEL[t.side as 'red' | 'blue'].text}
+                    </span>
+                  </span>
+                )}
+                <button onClick={() => setTab(t.id)} title={t.hint}
+                  aria-current={active ? 'page' : undefined}
+                  className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5
+                    text-[12px] font-medium transition-colors duration-200
+                    ${active
+                      ? 'bg-[#1c2942] text-slate-100 shadow-[inset_0_0_0_1px_#2f3f60]'
+                      : 'text-slate-500 hover:bg-[#111a2b] hover:text-slate-300'}`}>
+                  <Icon size={14} strokeWidth={2} aria-hidden="true" />
+                  {t.label}
+                </button>
+                {closesGroup && <span aria-hidden="true" className="mr-1 h-5 w-px bg-slate-700/60" />}
+              </div>
             )
           })}
         </nav>
