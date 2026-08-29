@@ -52,3 +52,9 @@ Thumbs.db
 
 # Intermediate render for the project-explainer PDF; the PDF itself is the artifact.
 artifacts/aegis-project-explained.html
+
+# Firecrawl scratch output
+.firecrawl/
+
+# Submission archive (rebuild with scripts/make_submission_zip.sh)
+artifacts/aegis-submission.zip
