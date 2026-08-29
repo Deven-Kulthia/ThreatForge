@@ -1,0 +1,820 @@
+{
+  "generated_at_utc": "2026-08-17T19:03:48.666588+00:00",
+  "dataset": {
+    "transactions": 90258,
+    "fraud": 3459,
+    "fraud_rate": 0.03832,
+    "cards": 1650,
+    "merchants": 263,
+    "days": 44,
+    "attack_vectors": 25,
+    "campaigns": 75,
+    "synthetic": true
+  },
+  "split": {
+    "method": "temporal with delay block",
+    "train": 58667,
+    "test": 27078,
+    "delay_fraction": 0.05,
+    "test_fraud_rate": 0.02977
+  },
+  "discrimination": {
+    "pr_auc": 0.9435,
+    "pr_auc_95ci": [
+      0.9312,
+      0.9572
+    ],
+    "roc_auc": 0.9894,
+    "note": "PR-AUC is the headline; ROC-AUC is reported for comparability and is optimistic under imbalance"
+  },
+  "operating_point_best_f1": {
+    "threshold": 0.7977,
+    "precision": 0.9716,
+    "recall": 0.8908,
+    "f1": 0.9294,
+    "false_positive_rate": 0.0008,
+    "confusion": {
+      "tp": 718,
+      "fp": 21,
+      "fn": 88,
+      "tn": 26251
+    }
+  },
+  "operating_point_capacity_constrained": {
+    "alert_rate": 0.01,
+    "alerts": 271,
+    "recall": 0.3337,
+    "precision": 0.9926,
+    "threshold": 1.0,
+    "rationale": "recall achievable within a 1% daily review budget",
+    "recall_ceiling": 0.336,
+    "ceiling_note": "Recall here is BOUNDED BY THE BUDGET, not by the model: with a 1% alert budget and 2.98% test prevalence, no detector could exceed the ceiling shown. Read this number as 'value captured per unit of analyst effort', not as model recall."
+  },
+  "operating_point_prevalence_matched": {
+    "alert_rate": 0.0298,
+    "alerts": 806,
+    "recall": 0.9094,
+    "precision": 0.9094,
+    "threshold": 0.5263,
+    "rationale": "alert budget sized to actual prevalence, so recall is not budget-capped and reflects the detector rather than the queue"
+  },
+  "prevalence_note": "Synthetic fraud prevalence here is 3.83%, deliberately higher than the ~0.1-1% seen in live card portfolios (PSD2 RTS Annex reference bands are 1-13 bps; Stripe reports ~1 in 1,000). A higher rate is required to train and evaluate 25 distinct attack vectors on a synthetic corpus. Threshold-dependent metrics (precision, alert-rate recall, insult rate) are prevalence-sensitive and would shift in a live portfolio; PR-AUC, calibration and latency are the more transferable figures.",
+  "money_and_customer_impact": {
+    "value_detection_rate": 0.941,
+    "fraud_value_attempted": 315181.41,
+    "fraud_value_stopped": 296581.2,
+    "insult_rate": 0.0008,
+    "insult_rate_note": "share of legitimate payments declined at the best-F1 point"
+  },
+  "calibration": {
+    "brier": 0.00445,
+    "ece_10bin": 0.00378,
+    "reliability": [
+      {
+        "bin": "0.0-0.1",
+        "n": 26021,
+        "predicted": 0.0012,
+        "observed": 0.0019
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 60,
+        "predicted": 0.1193,
+        "observed": 0.1167
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 142,
+        "predicted": 0.2368,
+        "observed": 0.0634
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 4,
+        "predicted": 0.4591,
+        "observed": 0.25
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 52,
+        "predicted": 0.5282,
+        "observed": 0.1731
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 55,
+        "predicted": 0.6357,
+        "observed": 0.2182
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 6,
+        "predicted": 0.7658,
+        "observed": 0.3333
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 29,
+        "predicted": 0.8451,
+        "observed": 0.5517
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 709,
+        "predicted": 0.9987,
+        "observed": 0.9887
+      }
+    ],
+    "method": "isotonic regression on a held-out temporal slice"
+  },
+  "latency": {
+    "decision_p50_ms": 13.65,
+    "decision_p95_ms": 16.23,
+    "decision_p99_ms": 18.79,
+    "decision_mean_ms": 14.07,
+    "feature_build_ms_per_row_batch": 0.0854,
+    "samples": 150,
+    "context_rows": 2000,
+    "note": "decision_* is the inline path with features supplied; the batch feature recompute is reported separately and would be incremental in production"
+  },
+  "cascade": {
+    "graph_stage_share": 0.2,
+    "rationale": "expensive graph stage runs only on the riskiest slice"
+  },
+  "coverage": {
+    "attack_vectors_simulated": 25,
+    "categories": 10,
+    "rule_signals_implemented": 39,
+    "expected_signals_distinct": 39,
+    "expected_signals_covered": 39,
+    "signals_not_implemented": {
+      "session_duress_pattern": "requires session/interaction telemetry, outside the auth schema",
+      "refund_ratio_anomaly": "requires credit/refund messages, outside the auth schema",
+      "post_delivery_dispute": "requires dispute lifecycle data, outside the auth schema",
+      "repeat_claimant_pattern": "requires dispute lifecycle data, outside the auth schema",
+      "synchronised_timing": "covered in practice by ring_component + machine_cadence",
+      "graph_fanin": "emitted by the graph stage, not the rule stage",
+      "ring_component": "emitted by the graph stage, not the rule stage",
+      "injection_pattern_in_text": "emitted by the text-safety stage"
+    }
+  },
+  "per_attack": {
+    "GENAI_DOC_FARM": {
+      "n": 40,
+      "recall_at_alert_rate": 0.95,
+      "mean_risk": 0.9923,
+      "hard_to_detect": false,
+      "severity": 4,
+      "category": "Synthetic identity"
+    },
+    "DEEPFAKE_KYC_ONBOARD": {
+      "n": 40,
+      "recall_at_alert_rate": 0.825,
+      "mean_risk": 0.9837,
+      "hard_to_detect": false,
+      "severity": 5,
+      "category": "Deepfake / KYC"
+    },
+    "VOICE_CLONE_ATO": {
+      "n": 28,
+      "recall_at_alert_rate": 0.8929,
+      "mean_risk": 0.9962,
+      "hard_to_detect": false,
+      "severity": 5,
+      "category": "Account takeover"
+    },
+    "ATO_CREDENTIAL_STUFF": {
+      "n": 38,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": false,
+      "severity": 4,
+      "category": "Account takeover"
+    },
+    "SIM_SWAP_OTP": {
+      "n": 24,
+      "recall_at_alert_rate": 0.0417,
+      "mean_risk": 0.2722,
+      "hard_to_detect": true,
+      "severity": 5,
+      "category": "Account takeover"
+    },
+    "FAKE_STOREFRONT": {
+      "n": 23,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": false,
+      "severity": 4,
+      "category": "Merchant fraud"
+    },
+    "REFUND_ABUSE_COLLUSION": {
+      "n": 2,
+      "recall_at_alert_rate": 0.0,
+      "mean_risk": 0.8462,
+      "hard_to_detect": false,
+      "severity": 3,
+      "category": "Merchant fraud"
+    },
+    "APP_SCAM_LLM": {
+      "n": 10,
+      "recall_at_alert_rate": 0.9,
+      "mean_risk": 0.9846,
+      "hard_to_detect": true,
+      "severity": 5,
+      "category": "Scam / social engineering"
+    },
+    "ROMANCE_PIG_BUTCHERING": {
+      "n": 48,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": true,
+      "severity": 5,
+      "category": "Scam / social engineering"
+    },
+    "INVOICE_REDIRECT_BEC": {
+      "n": 4,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": true,
+      "severity": 4,
+      "category": "Scam / social engineering"
+    },
+    "CARD_TESTING_MICRO": {
+      "n": 80,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": false,
+      "severity": 3,
+      "category": "Enumeration"
+    },
+    "BIN_ENUMERATION_BURST": {
+      "n": 100,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": false,
+      "severity": 3,
+      "category": "Enumeration"
+    },
+    "MULE_FANOUT": {
+      "n": 31,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": false,
+      "severity": 5,
+      "category": "Fraud ring"
+    },
+    "AGENT_PROMPT_INJECTION": {
+      "n": 8,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": false,
+      "severity": 4,
+      "category": "Agentic commerce"
+    },
+    "VELOCITY_EVASION": {
+      "n": 72,
+      "recall_at_alert_rate": 0.9306,
+      "mean_risk": 0.9975,
+      "hard_to_detect": true,
+      "severity": 4,
+      "category": "Adaptive evasion"
+    },
+    "SCA_EXEMPTION_ABUSE": {
+      "n": 110,
+      "recall_at_alert_rate": 0.9091,
+      "mean_risk": 0.9824,
+      "hard_to_detect": true,
+      "severity": 4,
+      "category": "Adaptive evasion"
+    },
+    "TRA_THRESHOLD_GAMING": {
+      "n": 48,
+      "recall_at_alert_rate": 0.8542,
+      "mean_risk": 0.9948,
+      "hard_to_detect": true,
+      "severity": 4,
+      "category": "Adaptive evasion"
+    },
+    "ADAPTIVE_MIMICRY": {
+      "n": 68,
+      "recall_at_alert_rate": 0.0147,
+      "mean_risk": 0.2242,
+      "hard_to_detect": true,
+      "severity": 5,
+      "category": "Adaptive evasion"
+    },
+    "MANDATE_REPLAY_ABUSE": {
+      "n": 32,
+      "recall_at_alert_rate": 1.0,
+      "mean_risk": 1.0,
+      "hard_to_detect": true,
+      "severity": 5,
+      "category": "Agentic commerce"
+    }
+  },
+  "per_signal_recall": {
+    "GENAI_DOC_FARM": {
+      "device_sharing": {
+        "status": "implemented",
+        "fire_rate": 0.925
+      },
+      "ip_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.875
+      },
+      "ua_homogeneity": {
+        "status": "implemented",
+        "fire_rate": 0.8
+      },
+      "new_account_velocity": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      }
+    },
+    "DEEPFAKE_KYC_ONBOARD": {
+      "new_account_velocity": {
+        "status": "implemented",
+        "fire_rate": 0.5
+      },
+      "immediate_high_value": {
+        "status": "implemented",
+        "fire_rate": 0.75
+      },
+      "high_risk_mcc": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "geo_mismatch": {
+        "status": "implemented",
+        "fire_rate": 0.6
+      }
+    },
+    "VOICE_CLONE_ATO": {
+      "device_change": {
+        "status": "implemented",
+        "fire_rate": 0.1071
+      },
+      "geo_mismatch": {
+        "status": "implemented",
+        "fire_rate": 0.6786
+      },
+      "profile_change_then_spend": {
+        "status": "implemented",
+        "fire_rate": 0.1429
+      },
+      "behavioral_drift": {
+        "status": "implemented",
+        "fire_rate": 0.3214
+      }
+    },
+    "ATO_CREDENTIAL_STUFF": {
+      "device_sharing": {
+        "status": "implemented",
+        "fire_rate": 0.9211
+      },
+      "ip_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.8684
+      },
+      "many_cards_one_device": {
+        "status": "implemented",
+        "fire_rate": 0.7895
+      },
+      "machine_cadence": {
+        "status": "implemented",
+        "fire_rate": 0.9474
+      }
+    },
+    "SIM_SWAP_OTP": {
+      "device_change": {
+        "status": "implemented",
+        "fire_rate": 0.2083
+      },
+      "geo_mismatch": {
+        "status": "implemented",
+        "fire_rate": 0.2917
+      },
+      "authenticated_but_anomalous": {
+        "status": "implemented",
+        "fire_rate": 0.4583
+      },
+      "behavioral_drift": {
+        "status": "implemented",
+        "fire_rate": 0.625
+      }
+    },
+    "FAKE_STOREFRONT": {
+      "new_merchant_risk": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "merchant_ticket_anomaly": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      },
+      "avs_failure": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "high_risk_mcc": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      }
+    },
+    "REFUND_ABUSE_COLLUSION": {
+      "refund_ratio_anomaly": {
+        "status": "not_implemented",
+        "reason": "requires credit/refund messages, outside the auth schema"
+      },
+      "beneficiary_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      },
+      "device_sharing": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      }
+    },
+    "APP_SCAM_LLM": {
+      "first_time_beneficiary": {
+        "status": "implemented",
+        "fire_rate": 0.7
+      },
+      "amount_spike_vs_baseline": {
+        "status": "implemented",
+        "fire_rate": 0.7
+      },
+      "session_duress_pattern": {
+        "status": "not_implemented",
+        "reason": "requires session/interaction telemetry, outside the auth schema"
+      },
+      "authenticated_but_anomalous": {
+        "status": "implemented",
+        "fire_rate": 0.7
+      }
+    },
+    "ROMANCE_PIG_BUTCHERING": {
+      "escalating_amount_sequence": {
+        "status": "implemented",
+        "fire_rate": 0.7917
+      },
+      "beneficiary_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      },
+      "first_time_beneficiary": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      },
+      "behavioral_drift": {
+        "status": "implemented",
+        "fire_rate": 0.6875
+      }
+    },
+    "INVOICE_REDIRECT_BEC": {
+      "first_time_beneficiary": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "amount_spike_vs_baseline": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "corporate_exemption_abuse": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "beneficiary_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      }
+    },
+    "CARD_TESTING_MICRO": {
+      "micro_amount_cluster": {
+        "status": "implemented",
+        "fire_rate": 0.9375
+      },
+      "many_cards_one_merchant": {
+        "status": "implemented",
+        "fire_rate": 0.875
+      },
+      "machine_cadence": {
+        "status": "implemented",
+        "fire_rate": 0.975
+      },
+      "auth_failure_ratio": {
+        "status": "implemented",
+        "fire_rate": 0.7
+      }
+    },
+    "BIN_ENUMERATION_BURST": {
+      "bin_sequence_pattern": {
+        "status": "implemented",
+        "fire_rate": 0.95
+      },
+      "auth_failure_ratio": {
+        "status": "implemented",
+        "fire_rate": 0.88
+      },
+      "machine_cadence": {
+        "status": "implemented",
+        "fire_rate": 0.98
+      },
+      "ip_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.95
+      }
+    },
+    "MULE_FANOUT": {
+      "beneficiary_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.2903
+      },
+      "graph_fanin": {
+        "status": "not_implemented",
+        "reason": "emitted by the graph stage, not the rule stage"
+      },
+      "ring_component": {
+        "status": "not_implemented",
+        "reason": "emitted by the graph stage, not the rule stage"
+      },
+      "rapid_pass_through": {
+        "status": "implemented",
+        "fire_rate": 0.5161
+      }
+    },
+    "AGENT_PROMPT_INJECTION": {
+      "injection_pattern_in_text": {
+        "status": "not_implemented",
+        "reason": "emitted by the text-safety stage"
+      },
+      "new_merchant_risk": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "merchant_ticket_anomaly": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      }
+    },
+    "VELOCITY_EVASION": {
+      "behavioral_drift": {
+        "status": "implemented",
+        "fire_rate": 0.125
+      },
+      "sub_threshold_pacing": {
+        "status": "implemented",
+        "fire_rate": 0.0556
+      },
+      "device_change": {
+        "status": "implemented",
+        "fire_rate": 0.0556
+      }
+    },
+    "SCA_EXEMPTION_ABUSE": {
+      "sub_threshold_pacing": {
+        "status": "implemented",
+        "fire_rate": 0.0727
+      },
+      "low_value_exemption_cluster": {
+        "status": "implemented",
+        "fire_rate": 0.9455
+      },
+      "beneficiary_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.9091
+      },
+      "no_3ds_challenge": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      }
+    },
+    "TRA_THRESHOLD_GAMING": {
+      "sub_threshold_pacing": {
+        "status": "implemented",
+        "fire_rate": 0.9167
+      },
+      "amount_just_below_band": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "exemption_claim_anomaly": {
+        "status": "implemented",
+        "fire_rate": 0.1667
+      }
+    },
+    "ADAPTIVE_MIMICRY": {
+      "beneficiary_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      },
+      "subtle_drift": {
+        "status": "implemented",
+        "fire_rate": 0.0294
+      },
+      "graph_fanin": {
+        "status": "not_implemented",
+        "reason": "emitted by the graph stage, not the rule stage"
+      }
+    },
+    "MANDATE_REPLAY_ABUSE": {
+      "mandate_mismatch": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      },
+      "amount_just_below_band": {
+        "status": "implemented",
+        "fire_rate": 1.0
+      },
+      "machine_cadence": {
+        "status": "implemented",
+        "fire_rate": 0.0
+      },
+      "beneficiary_concentration": {
+        "status": "implemented",
+        "fire_rate": 0.0938
+      }
+    }
+  },
+  "zero_day": {
+    "held_out_vectors": [
+      "AGENT_IMPERSONATION",
+      "APP_SCAM_LLM",
+      "ATO_CREDENTIAL_STUFF",
+      "BIN_ENUMERATION_BURST",
+      "ROMANCE_PIG_BUTCHERING",
+      "SYNTH_ID_BUSTOUT"
+    ],
+    "threshold_from_seen_traffic": 1.0,
+    "unseen_transactions": 975,
+    "unseen_recall": 0.7179,
+    "per_vector": {
+      "AGENT_IMPERSONATION": {
+        "n": 216,
+        "recall_at_seen_threshold": 0.1157,
+        "mean_risk": 0.8655,
+        "hard_to_detect": false
+      },
+      "APP_SCAM_LLM": {
+        "n": 30,
+        "recall_at_seen_threshold": 0.8,
+        "mean_risk": 0.9875,
+        "hard_to_detect": true
+      },
+      "ATO_CREDENTIAL_STUFF": {
+        "n": 117,
+        "recall_at_seen_threshold": 0.9744,
+        "mean_risk": 0.9972,
+        "hard_to_detect": false
+      },
+      "BIN_ENUMERATION_BURST": {
+        "n": 300,
+        "recall_at_seen_threshold": 1.0,
+        "mean_risk": 1.0,
+        "hard_to_detect": false
+      },
+      "ROMANCE_PIG_BUTCHERING": {
+        "n": 144,
+        "recall_at_seen_threshold": 0.5,
+        "mean_risk": 0.931,
+        "hard_to_detect": true
+      },
+      "SYNTH_ID_BUSTOUT": {
+        "n": 168,
+        "recall_at_seen_threshold": 0.9821,
+        "mean_risk": 0.9986,
+        "hard_to_detect": false
+      }
+    },
+    "interpretation": "recall on fraud typologies entirely absent from training, measured at an operating point calibrated on seen traffic only"
+  },
+  "fidelity": {
+    "realism": {
+      "legit_baseline_fraud_bps": {
+        "value": 0.0,
+        "reference_band": [
+          0.0,
+          60.0
+        ],
+        "within_band": true
+      },
+      "cnp_share": {
+        "value": 0.42365,
+        "reference_band": [
+          0.3,
+          0.6
+        ],
+        "within_band": true
+      },
+      "cross_border_share": {
+        "value": 0.10309,
+        "reference_band": [
+          0.03,
+          0.2
+        ],
+        "within_band": true
+      },
+      "night_share": {
+        "value": 0.03422,
+        "reference_band": [
+          0.02,
+          0.18
+        ],
+        "within_band": true
+      },
+      "benford_mad": {
+        "value": 0.00101,
+        "reference_band": [
+          0.0,
+          0.015
+        ],
+        "within_band": true
+      },
+      "log_amount_abs_skew": {
+        "value": 0.00471,
+        "reference_band": [
+          0.0,
+          1.0
+        ],
+        "within_band": true
+      },
+      "dispersion_index": {
+        "value": 35.22185,
+        "reference_band": [
+          1.0,
+          400.0
+        ],
+        "within_band": true
+      },
+      "mcc_gini": {
+        "value": 0.44472,
+        "reference_band": [
+          0.25,
+          0.85
+        ],
+        "within_band": true
+      },
+      "mean_primary_device_share": {
+        "value": 0.97024,
+        "reference_band": [
+          0.55,
+          1.0
+        ],
+        "within_band": true
+      },
+      "weekend_weekday_volume_ratio": 1.094,
+      "median_ticket": 54.06,
+      "checks_passed": 9,
+      "checks_total": 9
+    },
+    "separability": {
+      "per_field": {
+        "amount": {
+          "univariate_auc": 0.5591,
+          "overlap": 0.8599
+        },
+        "hour_of_day": {
+          "univariate_auc": 0.6506,
+          "overlap": 0.6673
+        },
+        "merchant_age_days": {
+          "univariate_auc": 0.7061,
+          "overlap": 0.5497
+        },
+        "card_present": {
+          "univariate_auc": 0.7882,
+          "overlap": 0.4236
+        },
+        "cross_border": {
+          "univariate_auc": 0.8958,
+          "overlap": 0.2083
+        },
+        "network_token_used": {
+          "univariate_auc": 0.5524,
+          "overlap": 0.8952
+        },
+        "is_recurring": {
+          "univariate_auc": 0.5069,
+          "overlap": 0.9862
+        }
+      },
+      "max_univariate_auc": 0.8958,
+      "mean_univariate_auc": 0.6656,
+      "mean_overlap": 0.6557,
+      "most_camouflaged_vectors": {
+        "VELOCITY_EVASION": 0.6908,
+        "GENAI_DOC_FARM": 0.6398,
+        "TRA_THRESHOLD_GAMING": 0.6363,
+        "AGENT_IMPERSONATION": 0.626,
+        "ATO_CREDENTIAL_STUFF": 0.6151
+      },
+      "least_camouflaged_vectors": {
+        "MULE_FANOUT": 0.4507,
+        "APP_SCAM_LLM": 0.4266,
+        "MANDATE_REPLAY_ABUSE": 0.4036
+      },
+      "interpretation": "Univariate AUC is measured on RAW authorization fields, not engineered features. A max well below 1.0 means no single field betrays the attacks, so the reported detection performance comes from the feature layer and cascade rather than from a generation artefact. High overlap on the hard-by-design vectors is the intended result, not a defect."
+    },
+    "summary": "9/9 marginals within published reference bands; max raw-field univariate AUC 0.8958, mean attack/legit overlap 0.6557"
+  }
+}
