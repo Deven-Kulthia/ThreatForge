@@ -23,16 +23,30 @@ Generates 25 GenAI-era attacks, trains the defence on them, then grades detectio
 ```
 *140 / 140 characters — exactly at the limit; do not add a full stop or it will truncate.*
 
-## 3 · Submission Track
+## 3 · Writeup URL  *(max 50 chars)*
+
+Kaggle auto-generates a throwaway slug like `new-writeup-1787224712907`. Judges see this
+in the address bar, so replace it with:
+
+```
+aegis-ai-defence-lab-payment-security
+```
+*37 / 50 characters.* Final URL becomes
+`kaggle.com/competitions/mastercard-innovation-challenge-2026/writeups/aegis-ai-defence-lab-payment-security`
+
+**Do this before submitting.** Kaggle warns "changing the url will break existing links" —
+harmless now while nothing points at it, costly once shared.
+
+## 4 · Submission Track
 
 Already complete. Single track, auto-selected: **AI Defense Lab for Payment Security**.
 
-## 4 · Card and Thumbnail Image  *(560 × 280)*
+## 5 · Card and Thumbnail Image  *(560 × 280)*
 
 Upload `artifacts/aegis-card-560x280.png` (rendered at 2× for a crisp result).
 Rebuild with `python3 scripts/make_thumbnail.py`.
 
-## 5 · Project Description
+## 6 · Project Description
 
 Paste the **entire contents** of `docs/submission-writeup.md`, with two edits:
 
@@ -45,35 +59,45 @@ Paste the **entire contents** of `docs/submission-writeup.md`, with two edits:
 Everything else goes in as-is. It is ~2,500 words, structured on the three pillars, and
 covers all 14 official criteria.
 
-## 6 · Project Links
+## 7 · Project Links
 
 | Label | URL |
 |---|---|
 | Code repository (private — access on request) | `https://github.com/Deven-Kulthia/aegis-ai-defence-lab` |
 
-Add this note beside the link so the 404 is expected rather than looking like a broken
-submission:
+Link title (keep it short — Kaggle truncates):
 
 ```
-Repository is private during the competition period per Kaggle Foundational Rules
-§6a, which restrict sharing competition code. The complete source is attached as
-aegis-submission.zip below; read access can be granted to judges on request.
+Aegis — source repository (private during judging)
 ```
 
-## 7 · Project Files  *(max 100 MB per upload)*
+Description (249 / 255 chars — cites the specific rule and points judges at the code):
+
+```
+Private during the competition period per Kaggle Foundational Rules §6a, which
+restrict sharing competition code. Full source — including complete commit
+history as GIT-HISTORY.txt — is attached as aegis-submission.zip. Read access
+available to judges on request.
+```
+
+**Do not add Kaggle Datasets / Code / Models / Benchmarks resources.** The files attach
+directly (well under the 100 MB limit), so a Dataset would be a second copy of the same
+code and only creates ambiguity about which is authoritative.
+
+## 8 · Project Files  *(max 100 MB per upload)*
 
 All three fit comfortably — no Kaggle Dataset needed.
 
 | File | Path | Size | Serves |
 |---|---|---|---|
-| `aegis-submission.zip` | `artifacts/aegis-submission.zip` | 3.0 MB | **Artifact 1** — code repository |
+| `aegis-submission.zip` | `artifacts/aegis-submission.zip` | 3.1 MB | **Artifact 1** — code repository (incl. GIT-HISTORY.txt) |
 | `aegis-walkthrough.pptx` | `artifacts/aegis-walkthrough.pptx` | 758 KB | **Artifact 2** — solution walkthrough |
 | `aegis-project-explained.pdf` | `artifacts/aegis-project-explained.pdf` | 302 KB | Artifact 2 — full technical depth |
 
 Rebuild the zip before uploading: `./scripts/make_submission_zip.sh`
 (it is gitignored, and the script aborts if a credential would ship).
 
-## 8 · Media gallery
+## 9 · Media gallery
 
 Upload all 8 captures from `artifacts/screenshots/` — this evidences **Artifact 3**
 (working web prototype) even if no judge runs the code. Suggested order and captions:
@@ -96,6 +120,7 @@ No video is required. If one is added later it must be hosted on YouTube.
 ## Before clicking Submit
 
 - [ ] All 6 checklist items show complete (Submit stays disabled until then)
+- [ ] **Writeup URL changed** off the auto-generated `new-writeup-…` slug
 - [ ] Title and subtitle within limits
 - [ ] Description pasted, "Paste target" note and artifacts table removed
 - [ ] 3 files uploaded, repo link added with the privacy note
