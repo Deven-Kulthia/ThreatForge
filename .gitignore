@@ -58,3 +58,6 @@ artifacts/aegis-project-explained.html
 
 # Submission archive (rebuild with scripts/make_submission_zip.sh)
 artifacts/aegis-submission.zip
+
+# Stray extraction of the submission archive (Finder double-click creates this)
+artifacts/aegis-submission/

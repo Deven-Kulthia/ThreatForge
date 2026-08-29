@@ -12,7 +12,24 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 OUT=artifacts/aegis-submission.zip
+HIST=GIT-HISTORY.txt
 rm -f "$OUT"
+
+# The archive excludes .git/, so commit history — the evidence that this was built
+# iteratively rather than dumped at the deadline — would be lost. Ship it as text.
+{
+  echo "Aegis — commit history"
+  echo "Repository: github.com/Deven-Kulthia/aegis-ai-defence-lab (private during the"
+  echo "competition period per Kaggle Foundational Rules 6a; this archive is the full source)"
+  echo "Generated: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  echo
+  echo "=== Summary ==="
+  echo "commits: $(git rev-list --count HEAD)"
+  echo "files tracked: $(git ls-files | wc -l | tr -d ' ')"
+  echo
+  echo "=== Full log with messages ==="
+  git log --stat --date=iso --format='%n----------%ncommit %h%nDate:   %ad%n%n%B'
+} > "$HIST"
 
 zip -qr "$OUT" . \
   -x ".venv/*" \
@@ -25,7 +42,11 @@ zip -qr "$OUT" . \
      "**/__pycache__/*" \
      "**/.DS_Store" \
      "research/*.html" \
-     "artifacts/aegis-submission.zip"
+     "artifacts/aegis-submission.zip" \
+     "artifacts/aegis-submission/*" \
+     "artifacts/aegis-project-explained.html"
+
+rm -f "$HIST"
 
 # Fail loudly rather than ship a credential. Matches a bare `.env` entry only —
 # `.env.example` is intentionally included as setup documentation.
@@ -34,7 +55,7 @@ if unzip -l "$OUT" | grep -qE '[[:space:]]\.env$'; then
   rm -f "$OUT"
   exit 1
 fi
-for pat in '\.venv/' 'node_modules/'; do
+for pat in '\.venv/' 'node_modules/' 'aegis-submission/'; do
   if unzip -l "$OUT" | grep -qE "$pat"; then
     echo "ABORT: $pat leaked into $OUT." >&2
     rm -f "$OUT"
