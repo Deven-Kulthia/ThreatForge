@@ -211,7 +211,7 @@ captures of this system, not mockups.
 ## Reproducing the demo from scratch
 
 ```bash
-git clone <repo> && cd aegis-ai-defence-lab
+git clone <repo> && cd ThreatForge
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m backend.app.evaluate         # generates metrics (~3 min)
 cd frontend && npm install && cd ..

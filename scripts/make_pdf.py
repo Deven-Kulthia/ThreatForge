@@ -132,7 +132,7 @@ def build_html(m: dict) -> str:
       ("Competition", "Mastercard Innovation Challenge 2026 — AI Defense Lab for Payment Security"),
       ("Organiser", "Mastercard AI Garage"),
       ("Entry", "Solo"),
-      ("Repository", "<code>Deven-Kulthia/aegis-ai-defence-lab</code> (private until judging)"),
+      ("Repository", "<code>Deven-Kulthia/ThreatForge</code> (public)"),
       ("Backend language", "Python 3.14.4"),
       ("Frontend language", "TypeScript 5.7 (React 19)"),
       ("Code size", "4,210 lines backend · 2,176 lines frontend · 857 lines tests"),
@@ -894,7 +894,7 @@ scripts/          verify.sh · make_deck.py · make_pdf.py · gen_docs.py · ui_
 artifacts/        metrics.json · aegis-walkthrough.pptx · aegis-project-explained.pdf ·
                   screenshots/ · audit.db</code></pre>
 <h3>Reproduce everything from a clean checkout</h3>
-<pre><code>git clone &lt;repo&gt; &amp;&amp; cd aegis-ai-defence-lab
+<pre><code>git clone &lt;repo&gt; &amp;&amp; cd ThreatForge
 python3 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt
 cd frontend &amp;&amp; npm install &amp;&amp; cd ..
 .venv/bin/python -m backend.app.evaluate

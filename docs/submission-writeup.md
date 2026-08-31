@@ -3,19 +3,10 @@
 **Mastercard Innovation Challenge 2026 · AI Defence Lab for Payment Security**
 Solo entry. 100% synthetic data. Simulator network-isolated by construction.
 
-> **Paste target:** this is the text for the Kaggle **Writeups** submission. Submit a minimum
-> version EARLY — Rules §2/§3: *"any un-submitted or draft work by the deadline will not be
-> considered."* Then keep updating it.
-
----
-
-## The three required artifacts
-
-| # | Artifact | Where |
-|---|---|---|
-| 1 | **Code repository** — runnable, covers all three pillars | `Deven-Kulthia/aegis-ai-defence-lab` (private until judging concludes, per Kaggle Foundational §6a) |
-| 2 | **Solution walkthrough** (.pptx) | `artifacts/aegis-walkthrough.pptx` — 15 slides, generated from verified metrics |
-| 3 | **Working web prototype** | React command centre, 7 panels; `npm run dev` + `uvicorn`. Fallback captures in `artifacts/screenshots/` |
+**Team:** ThreatForge
+**Member:** Deven Kulthia — devenkulthia007@gmail.com (registered on Luma)
+**Public repository:** https://github.com/Deven-Kulthia/ThreatForge
+**Solution walkthrough:** `ThreatForge.docx` (attached)
 
 ---
 
@@ -297,7 +288,7 @@ cd frontend && npm run dev                          # terminal 2
 - **Simulator never targets live systems** — network isolation enforced by an AST test (Rules §3b).
 - **Dependencies all OSI-approved permissive** (BSD-3-Clause / MIT / Apache-2.0). No AGPL, nothing
   limiting commercial use (Kaggle Foundational §6c). Inventory in `requirements.txt`.
-- **Repo private until judging concludes** (Kaggle Foundational §6a).
+- **Repo public and named after the team**, per Step 4 of the host's submission guidelines.
 - Responsible-AI and security posture: `docs/security.md`.
 
 ---

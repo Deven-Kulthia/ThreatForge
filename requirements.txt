@@ -13,3 +13,4 @@ pytest>=8.0           # MIT
 # Deck generation (scripts/make_deck.py). Transitive: lxml (BSD-3-Clause),
 # Pillow (MIT-CMU), XlsxWriter (BSD-2-Clause) — all permissive.
 python-pptx>=1.0      # MIT
+python-docx>=1.2      # MIT  (scripts/make_docx.py — TeamName.docx submission artifact)

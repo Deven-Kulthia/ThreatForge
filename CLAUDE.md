@@ -15,7 +15,8 @@ statement, effectiveness, feasibility, scalability, commercial viability, presen
 - Synthetic data ONLY. No real cardholder data, PII, or production payment data.
 - Attack simulator must be **network-isolated by construction**. Never target live systems.
 - Dependencies must be OSI-approved permissive (MIT/BSD/Apache-2.0). No AGPL.
-- Repo stays **private** until after judging (Kaggle Foundational §6a).
+- Repo is **public** and named after the team (`ThreatForge`) — host submission guide Step 4
+  supersedes the earlier private-repo reading of Foundational §6a.
 - Submit the writeup EARLY — draft ≠ submitted = disqualified.
 
 ## Directory map

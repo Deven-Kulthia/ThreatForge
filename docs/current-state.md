@@ -29,7 +29,7 @@ frontend/     7-panel React command centre
 - **Compliance audit (2026-08-18):** repo confirmed private (unauth API → 404); 41 Python + 121 npm
   packages audited, zero AGPL/GPL/SSPL; 21 security tests enforce synthetic-only, no-PAN,
   Luhn-invalid tokens, truncated IPs, AST-level network isolation, responsible-AI taxonomy check
-- **Pushed:** 7 commits to private repo `Deven-Kulthia/aegis-ai-defence-lab`
+- **Pushed:** to PUBLIC repo `Deven-Kulthia/ThreatForge`
 
 ## Next
 1. Judge simulation against all 14 official criteria, then fix what it surfaces
@@ -64,7 +64,7 @@ ECE 0.0038 · VDR 0.941 · 90,258 txns at 3.83% fraud
 - Three artifacts required: code repo · walkthrough deck/doc · working web prototype
 - Synthetic data only; simulator network-isolated (enforced by AST test)
 - Dependencies OSI-permissive only (Kaggle §6c)
-- Repo stays private until judging concludes (Kaggle §6a)
+- Repo PUBLIC, named `ThreatForge` (host guide Step 4); `TeamName.docx` required
 
 ## Known bugs
 None open. Fixed this session: duplicate transaction_ids across same-type campaigns;

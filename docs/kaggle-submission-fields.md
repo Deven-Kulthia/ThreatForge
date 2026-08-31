@@ -1,139 +1,137 @@
 # Kaggle Writeup — exact field values
 
-The Kaggle form gates **Submit** behind a 6-item checklist. This file holds the exact
-copy-paste value for each item, so nothing is composed under deadline pressure.
+Aligned to the host's **Official Submission Guidelines** (posted by `raahul`), which override
+the generic competition text where they differ.
 
-**Form URL:** competition page → **Writeups** → your draft
-**Deadline:** 31 Aug 2026, 11:59 PM GMT+5:30
-**Track:** AI Defense Lab for Payment Security *(single track, auto-selected — already ✅)*
+**Team:** ThreatForge · **Member:** Deven Kulthia `<devenkulthia007@gmail.com>`
+**Public repo:** https://github.com/Deven-Kulthia/ThreatForge
+**Deadline:** 31 Aug 2026, 11:59 PM IST
+
+## What the host's guide changed
+
+| Requirement | Source | Consequence |
+|---|---|---|
+| Repo must be **public** and **named after the team** | Step 4 | Repo renamed `aegis-ai-defence-lab` → **ThreatForge**, visibility flipped to public |
+| Upload a **Word document** named `TeamName.docx` | Step 3 | `.pptx` alone is not sufficient → `artifacts/ThreatForge.docx` |
+| Project Description must list **team members' full names + registered email IDs** | Step 2 | Added at the top of the description |
+| A deployed/hosted URL is **not** mandatory | Host reply to Shreyas | Local run instructions in the repo satisfy the prototype requirement |
+| GitHub only — not GitLab/Codeberg | Host reply to Mihir | Already GitHub |
 
 ---
 
-## 1 · Title  *(required to save · max 80 chars)*
+## 1 · Title  *(max 80)*
 
 ```
 Aegis — a closed-loop red team / blue team defence for GenAI payment fraud
 ```
-*74 / 80 characters.*
+*74 / 80.*
 
-## 2 · Subtitle  *(max 140 chars — "explain your project in one sentence")*
+## 2 · Subtitle  *(max 140)*
 
 ```
 Generates 25 GenAI-era attacks, trains the defence on them, then grades detection per declared signal so blind spots become the next attack.
 ```
-*140 / 140 characters — exactly at the limit; do not add a full stop or it will truncate.*
+*140 / 140 — exactly at the limit; do not add a full stop.*
 
-## 3 · Writeup URL  *(max 50 chars)*
-
-Kaggle auto-generates a throwaway slug like `new-writeup-1787224712907`. Judges see this
-in the address bar, so replace it with:
+## 3 · Writeup URL  *(max 50)*
 
 ```
-aegis-ai-defence-lab-payment-security
+threatforge-aegis-payment-security
 ```
-*37 / 50 characters.* Final URL becomes
-`kaggle.com/competitions/mastercard-innovation-challenge-2026/writeups/aegis-ai-defence-lab-payment-security`
-
-**Do this before submitting.** Kaggle warns "changing the url will break existing links" —
-harmless now while nothing points at it, costly once shared.
+*34 / 50.* Change it before submitting, while nothing links to it yet.
 
 ## 4 · Submission Track
 
-Already complete. Single track, auto-selected: **AI Defense Lab for Payment Security**.
+Auto-selected: **AI Defense Lab for Payment Security**. Already complete.
 
 ## 5 · Card and Thumbnail Image  *(560 × 280)*
 
-Upload `artifacts/aegis-card-560x280.png` (rendered at 2× for a crisp result).
-Rebuild with `python3 scripts/make_thumbnail.py`.
+Upload `artifacts/aegis-card-560x280.png`. Rebuild: `python3 scripts/make_thumbnail.py`.
 
 ## 6 · Project Description
 
-Paste the **entire contents** of `docs/submission-writeup.md`, with two edits:
-
-1. **Delete** the block at the top beginning `> **Paste target:**` — that is a note to
-   ourselves, not to judges.
-2. **Delete** the "The three required artifacts" table — the Attachments section below
-   now carries those, so the table is redundant and its "where" column points at local
-   paths a judge cannot open.
-
-Everything else goes in as-is. It is ~2,500 words, structured on the three pillars, and
-covers all 14 official criteria.
-
-## 7 · Project Links
-
-| Label | URL |
-|---|---|
-| Code repository (private — access on request) | `https://github.com/Deven-Kulthia/aegis-ai-defence-lab` |
-
-Link title (keep it short — Kaggle truncates):
+**Start with this block** — Step 2 requires team names and registered emails:
 
 ```
-Aegis — source repository (private during judging)
+Team: ThreatForge
+Member: Deven Kulthia — devenkulthia007@gmail.com (registered on Luma)
+Public repository: https://github.com/Deven-Kulthia/ThreatForge
+Solution walkthrough: ThreatForge.docx (attached)
 ```
 
-Description (249 / 255 chars — cites the specific rule and points judges at the code):
+Then paste the whole of `docs/submission-writeup.md`, minus the `> **Paste target:**` note at
+the top.
 
+## 7 · Project Links  *(Step 4)*
+
+| URL |
+|---|
+| `https://github.com/Deven-Kulthia/ThreatForge` |
+
+Title:
 ```
-Private during the competition period per Kaggle Foundational Rules §6a, which
-restrict sharing competition code. Full source — including complete commit
-history as GIT-HISTORY.txt — is attached as aegis-submission.zip. Read access
-available to judges on request.
+ThreatForge — public source repository
 ```
 
-**Do not add Kaggle Datasets / Code / Models / Benchmarks resources.** The files attach
-directly (well under the 100 MB limit), so a Dataset would be a second copy of the same
-code and only creates ambiguity about which is authoritative.
+Description:
+```
+Public repository named after the team, per Step 4 of the submission guidelines.
+Contains all three pillars (identify, generate, defend), the web prototype, 113
+tests, and one-command verification. Run instructions in README.
+```
 
-## 8 · Project Files  *(max 100 MB per upload)*
+**Do not add Kaggle Datasets / Code / Models / Benchmarks resources** — the repo is public and
+the files attach directly, so a Dataset would only duplicate the source.
 
-All three fit comfortably — no Kaggle Dataset needed.
+## 8 · Project Files  *(max 100 MB each)*
 
 | File | Path | Size | Serves |
 |---|---|---|---|
-| `aegis-submission.zip` | `artifacts/aegis-submission.zip` | 3.1 MB | **Artifact 1** — code repository (incl. GIT-HISTORY.txt) |
-| `aegis-walkthrough.pptx` | `artifacts/aegis-walkthrough.pptx` | 758 KB | **Artifact 2** — solution walkthrough |
-| `aegis-project-explained.pdf` | `artifacts/aegis-project-explained.pdf` | 302 KB | Artifact 2 — full technical depth |
+| **`ThreatForge.docx`** | `artifacts/ThreatForge.docx` | 45 KB | **Required by Step 3** — solution walkthrough |
+| `aegis-walkthrough.pptx` | `artifacts/aegis-walkthrough.pptx` | 758 KB | 15-slide deck (supplementary) |
+| `aegis-project-explained.pdf` | `artifacts/aegis-project-explained.pdf` | 302 KB | 31-page technical depth (supplementary) |
 
-Rebuild the zip before uploading: `./scripts/make_submission_zip.sh`
-(it is gitignored, and the script aborts if a credential would ship).
+`ThreatForge.docx` is the one the guide names. The other two are extra depth, not substitutes.
+The source zip is no longer needed as an attachment now that the repo is public — keep it only
+if you want a frozen snapshot.
 
-## 9 · Media gallery
+Rebuild the docx:
+```bash
+.venv/bin/python scripts/make_docx.py --team "ThreatForge" \
+  --members "Deven Kulthia <devenkulthia007@gmail.com>" \
+  --repo "https://github.com/Deven-Kulthia/ThreatForge"
+```
 
-Upload all 8 captures from `artifacts/screenshots/` — this evidences **Artifact 3**
-(working web prototype) even if no judge runs the code. Suggested order and captions:
+## 9 · Media gallery  *(optional, recommended)*
+
+Upload the 8 captures from `artifacts/screenshots/` — evidences the working prototype without
+a judge running anything.
 
 | File | Caption |
 |---|---|
 | `01-overview.png` | Executive overview — verified metrics, alert bands, the closed loop |
-| `02-red-team.png` | Red team — 25 attack vectors, each declaring its expected detection signals up front |
-| `03-campaign-result.png` | Per-signal grading — which declared signals fired, and which were missed |
+| `02-red-team.png` | Red team — 25 vectors, each declaring its expected detection signals up front |
+| `03-campaign-result.png` | Per-signal grading — which declared signals fired, and which missed |
 | `04-live-stream.png` | Blue team — scored authorization feed with recommended actions |
-| `05-investigate.png` | Exact additive score decomposition, reason codes and counterfactual |
+| `05-investigate.png` | Exact additive score decomposition, reason codes, counterfactual |
 | `06-fraud-network.png` | Shared-infrastructure graph — one device linked to 31 distinct cards |
-| `07-performance.png` | Full evaluation — three operating points, calibration, per-attack recall worst-first |
+| `07-performance.png` | Full evaluation — three operating points, calibration, worst-first recall |
 | `08-audit-trail.png` | Append-only audit trail for model governance |
 
-No video is required. If one is added later it must be hosted on YouTube.
+No video required; if added later it must be YouTube-hosted.
 
 ---
 
-## Before clicking Submit
+## Final checklist (host's own, Step 5)
 
-- [ ] All 6 checklist items show complete (Submit stays disabled until then)
-- [ ] **Writeup URL changed** off the auto-generated `new-writeup-…` slug
-- [ ] Title and subtitle within limits
-- [ ] Description pasted, "Paste target" note and artifacts table removed
-- [ ] 3 files uploaded, repo link added with the privacy note
-- [ ] 8 screenshots in the media gallery
-- [ ] Thumbnail uploaded
+- [x] Team formed on Kaggle — solo is permitted (1–5 members)
+- [ ] Project Description includes full name + registered email
+- [ ] `ThreatForge.docx` uploaded under FILES
+- [x] Public GitHub repo named `ThreatForge`
+- [ ] Writeup URL slug changed
+- [ ] **Submitted** — not left as a draft
 
-## Then
+> *"Only submissions completed and submitted on Kaggle before the deadline will be judged.
+> Drafts or unsubmitted Writeups will not be considered."*
 
-**Click `Submit`, not `Save Draft`.** Reload the page afterwards and confirm it does not
-say *Draft*.
-
-> Rules §2: *"Any un-submitted or draft work by the deadline will not be considered by
-> the judges."*
-
-Editing after submitting is fine — submitted-then-improved counts; drafted-then-forgotten
-scores zero.
+Editing after submitting is allowed until the deadline.

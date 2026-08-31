@@ -23,7 +23,7 @@ No database server, no Docker, no Redis, no API key. That is deliberate — see
 
 ```bash
 git clone <repository-url>
-cd aegis-ai-defence-lab
+cd ThreatForge
 
 # backend
 python3 -m venv .venv

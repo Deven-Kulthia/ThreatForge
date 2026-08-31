@@ -149,7 +149,7 @@ All dependencies are OSI-approved permissive licences (BSD-3-Clause / MIT / Apac
 
 ```bash
 git clone <repository-url>
-cd aegis-ai-defence-lab
+cd ThreatForge
 
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
@@ -165,7 +165,7 @@ cd frontend && npm install && cd ..
 GITHUB_USERNAME=<your_github_username>
 GITHUB_TOKEN=<your_github_personal_access_token>
 GITHUB_OWNER=<your_github_username>
-GITHUB_REPOSITORY=aegis-ai-defence-lab
+GITHUB_REPOSITORY=ThreatForge
 ```
 
 `.env` is git-ignored and must never be committed. Copy `.env.example` as a template.
