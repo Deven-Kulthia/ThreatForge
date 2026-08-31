@@ -53,7 +53,7 @@ Coverage includes all four threats Mastercard AI Garage named publicly (syntheti
 deepfake KYC, fake merchant storefronts, AI-enabled scams). **12 of 25 vectors are deliberately
 built to overlap legitimate behaviour** — the taxonomy is not padded with easy wins.
 
-Full taxonomy: `docs/fraud-taxonomy.md`. Threat model: `docs/threat-model.md`.
+Full taxonomy: [`docs/fraud-taxonomy.md`](https://github.com/Deven-Kulthia/ThreatForge/blob/main/docs/fraud-taxonomy.md). Threat model: [`docs/threat-model.md`](https://github.com/Deven-Kulthia/ThreatForge/blob/main/docs/threat-model.md).
 
 ---
 
@@ -93,8 +93,8 @@ enforced by an AST test in the suite, not merely asserted (Rules §3b).
 ### Fidelity evidence — measured, not asserted
 
 Criterion 2 is judged instrumentally ("realistic distributions, behaviours and edge cases … so they
-are genuinely useful for training and stress-testing a defense"), so `backend/app/fidelity.py`
-measures it and the results land in `artifacts/metrics.json`.
+are genuinely useful for training and stress-testing a defense"), so [`backend/app/fidelity.py`](https://github.com/Deven-Kulthia/ThreatForge/blob/main/backend/app/fidelity.py)
+measures it and the results land in [`artifacts/metrics.json`](https://github.com/Deven-Kulthia/ThreatForge/blob/main/artifacts/metrics.json).
 
 **Generated marginals vs published reference bands — 9 of 9 within band:**
 
@@ -267,8 +267,8 @@ constrains them to be feasible, and wires them into a continuous, per-signal-gra
 - **113 tests passing** across 4 suites, plus 6 module self-checks: data pipeline, detection, security, API.
 - `scripts/verify.sh --full` — module self-checks, tests, compliance scan, TypeScript typecheck,
   frontend build, browser smoke test. One command, green or it does not ship.
-- **Every number in this writeup and in the deck is generated from `artifacts/metrics.json`** by
-  `backend.app.evaluate`. `scripts/make_deck.py` builds the .pptx from that same file, so the deck
+- **Every number in this writeup and in the deck is generated from [`artifacts/metrics.json`](https://github.com/Deven-Kulthia/ThreatForge/blob/main/artifacts/metrics.json)** by
+  `backend.app.evaluate`. [`scripts/make_deck.py`](https://github.com/Deven-Kulthia/ThreatForge/blob/main/scripts/make_deck.py) builds the .pptx from that same file, so the deck
   cannot drift from the code. No figure is hand-typed.
 - Reproduce from a clean checkout:
 
@@ -289,7 +289,7 @@ cd frontend && npm run dev                          # terminal 2
 - **Dependencies all OSI-approved permissive** (BSD-3-Clause / MIT / Apache-2.0). No AGPL, nothing
   limiting commercial use (Kaggle Foundational §6c). Inventory in `requirements.txt`.
 - **Repo public and named after the team**, per Step 4 of the host's submission guidelines.
-- Responsible-AI and security posture: `docs/security.md`.
+- Responsible-AI and security posture: [`docs/security.md`](https://github.com/Deven-Kulthia/ThreatForge/blob/main/docs/security.md).
 
 ---
 
