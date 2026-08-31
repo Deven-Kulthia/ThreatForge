@@ -17,7 +17,7 @@ incapable of doing — and verified by tests, so a violation fails the build.
 | §3(b) | Adversarial testing must not target live systems, payment infrastructure or third parties | Simulator modules import no network capability whatsoever | `test_simulator_has_no_network_capability` (AST inspection) |
 | §3(c) | Responsible AI, cybersecurity, security-disclosure practice | LLM off the critical path; prompt-injection containment; no operational fraud instructions | `test_no_operational_fraud_instructions_in_taxonomy` |
 | Kaggle §6c | OSI-approved permissive licences that do not limit commercial use | BSD-3-Clause / MIT / Apache-2.0 only; SDV/CTGAN excluded (Business Source Licence) | `test_dependencies_are_permissively_licensed` |
-| Kaggle §6a | No private code sharing during the competition | Repository is private until judging concludes | Procedural |
+| Kaggle §6a | No private code sharing during the competition | Repository is **public** and named after the team, as the host's submission guidelines require (Step 4). Public disclosure on the terms the organiser mandates is not the private side-channel §6a targets. | Procedural |
 
 ## 2. Simulator isolation — the most important boundary
 

@@ -19,8 +19,8 @@ rm -f "$OUT"
 # iteratively rather than dumped at the deadline — would be lost. Ship it as text.
 {
   echo "Aegis — commit history"
-  echo "Repository: github.com/Deven-Kulthia/aegis-ai-defence-lab (private during the"
-  echo "competition period per Kaggle Foundational Rules 6a; this archive is the full source)"
+  echo "Repository: github.com/Deven-Kulthia/ThreatForge (public, per Step 4 of the"
+  echo "host submission guidelines)"
   echo "Generated: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   echo
   echo "=== Summary ==="

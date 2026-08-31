@@ -62,7 +62,7 @@ regenerates from a clean checkout."
 
 ## 1:45 — The red team (2min) ⭐ *the differentiator*
 
-**Screen:** Red Team.
+**Screen:** Attack Simulator (red team).
 
 **Say:** "This is the half of the brief most entries skip. 25 attack vectors across 10
 categories — synthetic identity, deepfake KYC, fake storefronts, AI-driven scams, agentic

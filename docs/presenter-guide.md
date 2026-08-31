@@ -123,7 +123,7 @@ The security suite is the one that matters for rules compliance — it proves th
 
 ### The three beats that win this
 
-1. **Show the loop, don't describe it.** Launch an attack live in Red Team, then show the signal
+1. **Show the loop, don't describe it.** Launch an attack live in Attack Simulator, then show the signal
    attribution — which declared signals fired and which missed. The misses are the loop's output.
 2. **Volunteer a weakness before they find it.** Go to the worst-first per-attack table yourself.
    Judges trust a presenter who shows the failures; they discount one who only shows wins.
@@ -136,7 +136,7 @@ The security suite is the one that matters for rules compliance — it proves th
 |---|---|---|
 | 0:00 | Boot | Everything is synthetic; card identifiers are tokens |
 | 0:45 | Overview | PR-AUC with a bootstrapped CI, not accuracy |
-| 1:45 | **Red Team** ⭐ | Expected signals declared *before* launch |
+| 1:45 | **Attack Simulator** ⭐ | Expected signals declared *before* launch |
 | 3:45 | Live Stream | The queue an analyst would actually work |
 | 4:30 | Investigate | Exact decomposition + the honest global-importance caveat |
 | 5:45 | Fraud Network | One device, 31 cards — invisible per transaction |
@@ -145,7 +145,7 @@ The security suite is the one that matters for rules compliance — it proves th
 
 ### Delivery notes
 
-- **Slow down on Red Team.** It's the half of the brief most entrants skip, and it's where your
+- **Slow down on Attack Simulator.** It's the half of the brief most entrants skip, and it's where your
   differentiation is. Two minutes minimum.
 - **Never say "accuracy."** At 2.98% prevalence it's meaningless and a payments judge will mark
   you down for using it.
@@ -300,7 +300,7 @@ The security suite is the one that matters for rules compliance — it proves th
 | Real data anywhere? | No. 100% self-generated synthetic. No cardholder data, PII or production data (Rules §3a). |
 | Can the simulator hit a live system? | No — it has no network client, enforced by an AST test in the security suite (Rules §3b). |
 | Dependency licences? | All OSI-permissive. 41 Python + 121 npm packages audited: zero AGPL/GPL/SSPL. (Foundational §6c) |
-| Why is the repo private? | Foundational §6a restricts sharing during the competition. Published after judging. |
+| Why is the repo public? | The host's submission guidelines (Step 4) require a public repo named after the team. That instruction supersedes our earlier private-by-default reading of Foundational §6a. |
 | Who owns the IP? | We do. Rules §5 — Mastercard gets a purpose-limited licence for judging and promotion. |
 
 ### F. Hostile / trap questions

@@ -22,10 +22,10 @@ Every number below is produced by `backend/app/evaluate.py` and regenerates from
 | **Zero-day recall** | **0.718** | Recall on 6 attack types removed from training entirely |
 | Calibration | **ECE 0.0038 · Brier 0.0045** | Makes "block above 0.9" actually mean something |
 | Value detection rate | 0.941 | Fraud is a money problem, not a count problem |
-| Recall @ 1% alert budget | 0.334 (ceiling **0.336**) | Budget-bound, not model-bound — 99.7% of the achievable maximum |
+| Recall @ 1% alert budget | 0.334 (ceiling **0.336**) | Budget-bound, not model-bound — 99.4% of the achievable maximum |
 | Recall @ prevalence-matched budget | 0.909 | Recall when the review queue isn't the binding constraint |
 
-**Scale:** 90,258 transactions · 3,459 fraud (3.83%) · 25 attack vectors · 45-day window · temporal split with a delay block.
+**Scale:** 90,258 transactions · 3,459 fraud (3.83%) · 25 attack vectors · 44-day window · temporal split with a delay block.
 
 A 2026 survey of 49 sources found that among 18 fraud sources, **none reported latency, cost, or calibration**. We report all three.
 

@@ -26,7 +26,8 @@ frontend/     7-panel React command centre
 - **Writeup:** `docs/submission-writeup.md` — Kaggle Writeups paste target, covers all 14 criteria
 - **Presenter guide:** `docs/presenter-guide.md` — run/test commands, 3-length pitch, ~30-question
   judge Q&A bank, memorised-numbers sheet, pre-demo checklist, failure recovery
-- **Compliance audit (2026-08-18):** repo confirmed private (unauth API → 404); 41 Python + 121 npm
+- **Compliance audit:** repo **public** as `ThreatForge` per host Step 4; history audited before
+  publishing (no .env ever committed, no credential in any commit); 42 Python + 121 npm
   packages audited, zero AGPL/GPL/SSPL; 21 security tests enforce synthetic-only, no-PAN,
   Luhn-invalid tokens, truncated IPs, AST-level network isolation, responsible-AI taxonomy check
 - **Pushed:** to PUBLIC repo `Deven-Kulthia/ThreatForge`
@@ -44,7 +45,7 @@ frontend/     7-panel React command centre
 - [ ] Re-check the competition page before submitting (Mastercard may amend terms)
 - [x] Registration: Kaggle rules accepted (= entry). Registration closes **20 Aug** — confirm any
       separate Luma/Mastercard form is done before then
-- [x] Synthetic-only, network-isolated simulator, permissive licences, repo private
+- [x] Synthetic-only, network-isolated simulator, permissive licences, repo public as `ThreatForge`
 
 ## Verified metrics (`artifacts/metrics.json`)
 PR-AUC **0.944** (CI 0.931–0.957) · ROC-AUC 0.989 · best-F1 **0.929** (P 0.972 / R 0.891) ·

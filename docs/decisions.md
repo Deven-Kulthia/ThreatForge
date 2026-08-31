@@ -165,14 +165,28 @@ that would make the hardest real attack invisible.
 
 ---
 
-## D11 — Private repository until judging concludes
+## D11 — Public repository named after the team *(reversed on 31 Aug 2026)*
 
-**Decision.** Private GitHub repo; publish after results on 5 Sep 2026.
+**Decision.** Public GitHub repo named `ThreatForge`, matching the Kaggle team name.
 
-**Why.** Kaggle Foundational §6a prohibits private code sharing during the competition
-period, and §6b permits public sharing only on Kaggle's own forums — where it is then
-deemed OSI-licensed to every competitor. A private repo linked from the writeup avoids
-both.
+**Originally decided.** Private repo, publish after results on 5 Sep 2026. The reasoning was
+that Kaggle Foundational §6a prohibits private code sharing during the competition period,
+and §6b permits public sharing only on Kaggle's own forums — where it is then deemed
+OSI-licensed to every competitor. A private repo linked from the writeup appeared to avoid
+both hazards.
+
+**Why it changed.** The competition host published Official Submission Guidelines requiring
+a **public** repository **named after the team** (Step 4), and confirmed in the discussion
+thread that GitHub specifically is required. An explicit instruction from the organiser
+resolves the §6a/§6b ambiguity that the private-by-default reading was hedging against:
+disclosure on terms the organiser mandates is not the private side-channel §6a targets.
+
+**What we did before flipping visibility.** Audited the full git history for credentials —
+`.env` was never committed, and no token, key or secret appears in any commit. Confirmed the
+captured Kaggle pages are untracked, so none of the organiser's page content is republished.
+
+**Cost of the reversal.** Our work is now visible to other entrants before judging. That is
+unavoidable given the requirement, and it is symmetric — every entrant is held to it.
 
 ---
 
